@@ -2,10 +2,10 @@ cc.game.onStart = function(){
     if(!cc.sys.isNative && document.getElementById("cocosLoading")) //If referenced loading.js, please remove it
         document.body.removeChild(document.getElementById("cocosLoading"));
 
-    var designSize = cc.size(480, 800);
+    var designSize = cc.size(800, 640);
     var screenSize = cc.view.getFrameSize();
 
-    if(!cc.sys.isNative && screenSize.height < 800){
+    if(!cc.sys.isNative && screenSize.height < 640){
         designSize = cc.size(320, 480);
         cc.loader.resPath = "res/Normal";
     }else{
