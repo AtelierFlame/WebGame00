@@ -1,4 +1,27 @@
-<!DOCTYPE html>
+<?php
+session_start();
+
+if(!isset($_SESSION['user_id']))
+{
+    if(isset($_COOKIE['user_id']) && isset($_COOKIE['user_name']))
+    {
+        $_SESSION['user_id'] = $_COOKIE['user_id'];
+        $_SESSION['user_name'] = $_COOKIE['user_name'];
+    }
+}
+
+if(isset($_SESSION['user_name']))
+{
+    echo '<div style="text-align:right;">You are logged as ' . $_SESSION['user_name'] . '<br>';
+    echo '<a href="..\..\logout.php"> Log out(' . $_SESSION['user_name'] . ')</a></div>';
+}
+else
+{
+    $home_url = '..\..\login.php';
+    header('Location:' . $home_url);
+}
+?>
+
 <html>
 <head>
     <meta charset="utf-8">
