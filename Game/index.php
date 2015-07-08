@@ -25,7 +25,7 @@ else
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Cocos2d-html5 Hello World test</title>
+    <title>Dimention Wars</title>
     <link rel="icon" type="image/GIF" href="res/favicon.ico"/>
     <meta name="viewport" content="width=321,user-scalable=no" />
     <meta name="apple-mobile-web-app-capable" content="yes"/>

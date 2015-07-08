@@ -1,4 +1,6 @@
-cc.game.onStart = function(){
+cc.game.onStart = function()
+{
+    cc.log("Game Start!!!!");
     if(!cc.sys.isNative && document.getElementById("cocosLoading")) //If referenced loading.js, please remove it
         document.body.removeChild(document.getElementById("cocosLoading"));
 
