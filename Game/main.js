@@ -4,20 +4,20 @@ cc.game.onStart = function()
     if(!cc.sys.isNative && document.getElementById("cocosLoading")) //If referenced loading.js, please remove it
         document.body.removeChild(document.getElementById("cocosLoading"));
 
-    var designSize = cc.size(800, 640);
+    var designSize = cc.size(800, 480);
     var screenSize = cc.view.getFrameSize();
+    g_Policy = new cc.ResolutionPolicy(cc.ContainerStrategy.ORIGINAL_CONTAINER, cc.ContentStrategy.SHOW_ALL);
 
-    if(!cc.sys.isNative && screenSize.height < 640){
-        designSize = cc.size(320, 480);
-        cc.loader.resPath = "res/Normal";
-    }else{
-        cc.loader.resPath = "res/HD";
-    }
-    cc.view.setDesignResolutionSize(designSize.width, designSize.height, cc.ResolutionPolicy.SHOW_ALL);
+    cc.loader.resPath = "res/";
 
-    //load resources
-    cc.LoaderScene.preload(g_resources, function () {
-        cc.director.runScene(new MyScene());
+    cc.LoaderScene.preload(g_resources, function ()
+    {
+        GameManager.GetInstance().GotoState(GameStartState.GetInstance());
     }, this);
+
+    GameInstance.getInstance().AdjustSizeForWindow();
+    window.addEventListener("resize", function(event){
+        GameInstance.getInstance().AdjustSizeForWindow();
+    })
 };
 cc.game.run();

@@ -4,13 +4,21 @@
     "showFPS" : false,
     "frameRate" : 60,
     "id" : "gameCanvas",
-    "renderMode" : 0,
+    "renderMode" : 1,
     "engineDir":"../",
 
     "modules" : ["cocos2d"],
 
     "jsList" : [
         "src/resource.js",
-        "src/myApp.js"
+
+        "src/StateMachine/State.js",
+        "src/StateMachine/StateMachine.js",
+        "src/StateMachine/GameState/GameStartState.js",
+
+        "src/GameManager/GameManager.js",
+        "src/GameManager/GameInstance.js",
+
+        "src/GameScene/GameScene.js"
     ]
 }
