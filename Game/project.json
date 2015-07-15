@@ -19,6 +19,12 @@
         "src/GameManager/GameManager.js",
         "src/GameManager/GameInstance.js",
 
-        "src/GameScene/GameScene.js"
+        "src/GameLayer/BaseLayer.js",
+
+        "src/GameLayer/GameBattleLayer.js",
+        "src/GameScene/BattleScene.js",
+
+        "src/GameLayer/GameTitleLayer.js",
+        "src/GameScene/GameTitleScene.js"
     ]
 }
