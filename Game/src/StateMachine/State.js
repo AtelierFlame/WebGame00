@@ -12,12 +12,12 @@ var State = cc.Class.extend({
 
     BeginState: function(stateName)
     {
-        cc.log("Begin State From" + stateName);
+        cc.log("Begin State From " + stateName + " to " + this.stateName);
     },
 
     EndState: function(stateName)
     {
-        cc.log("End State To" + stateName);
+        cc.log("End State From " + this.stateName + " to " + stateName);
     },
 
     CheckState:function()

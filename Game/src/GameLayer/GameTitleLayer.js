@@ -40,9 +40,6 @@ var GameTitleLayer = BaseLayer.extend({
 
     onGameStart:function()
     {
-        var scene = new BattleScene();
-
-        var trans = new cc.TransitionProgressRadialCCW(1, scene);
-        cc.director.runScene(trans);
+        GameManager.GetInstance().GotoState(GameBattleState.GetInstance());
     }
 });

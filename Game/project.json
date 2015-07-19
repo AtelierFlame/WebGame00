@@ -12,15 +12,27 @@
     "jsList" : [
         "src/resource.js",
 
+        "src/Card/PlayerCardData.js",
+        "src/Card/CardListConfig.js",
+        "src/Card/BattleCardSprite.js",
+
         "src/StateMachine/State.js",
         "src/StateMachine/StateMachine.js",
         "src/StateMachine/GameState/GameStartState.js",
+        "src/StateMachine/GameState/GameBattleState.js",
+        "src/StateMachine/GameState/BattleStartState.js",
+        "src/StateMachine/GameState/BattlePreRoundState.js",
+        "src/StateMachine/GameState/BattlePreActionState.js",
+        "src/StateMachine/GameState/BattleActionState.js",
 
         "src/GameManager/GameManager.js",
         "src/GameManager/GameInstance.js",
 
         "src/GameLayer/BaseLayer.js",
 
+        "src/GameLayer/BattleSkillPanelLayer.js",
+        "src/GameLayer/BattleCardInfoPanelLayer.js",
+        "src/GameLayer/BattleCardLayer.js",
         "src/GameLayer/GameBattleLayer.js",
         "src/GameScene/BattleScene.js",
 

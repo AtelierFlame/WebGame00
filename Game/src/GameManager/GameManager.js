@@ -5,7 +5,11 @@ var g_GameZOrder =
 {
     bg:0,
 
-    ui:100
+    card:100,
+
+    ui:200,
+
+    label:500,
 }
 
 var GameManager = (function()

@@ -2,6 +2,7 @@
  * Created by Administrator on 2015/7/16.
  */
 
+
 var BaseLayer=cc.Layer.extend({
     bgFrame:null,
     canTouch:false,
@@ -14,15 +15,14 @@ var BaseLayer=cc.Layer.extend({
 
         if(this.showBg)
         {
-            var bgFrame = cc.LayerColor(cc.color(0, 0, 0, 200));
-            this.addChild(bgFrame, g_GameZOrder.bg);
-            this.bgFrame = bgFrame;
-            this.setAnchorPoint(cc.p(0.5, 0.5));
+            this.bgFrame = new cc.LayerColor(cc.color(0, 0, 0, 200));
+            this.addChild(this.bgFrame, g_GameZOrder.bg);
+            this.setAnchorPoint(0.5, 0.5);
 
             this.ignoreAnchorPointForPosition(false);
             var winsize = cc.director.getWinSize();
             this.setContentSize(winsize);
-            this.setPosition(cc.p(winsize.width / 2, winsize.height / 2));
+            this.setPosition(winsize.width / 2, winsize.height / 2);
         }
 
         if(this.canTouch)

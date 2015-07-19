@@ -38,6 +38,11 @@ var StateMachine = cc.Class.extend({
             cc.error("State NULL error!!");
         }
 
+        if(!state.CheckState())
+        {
+            return;
+        }
+
         if(this.currentState)
         {
             this.currentState.EndState(state.stateName);
