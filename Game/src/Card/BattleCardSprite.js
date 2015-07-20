@@ -3,11 +3,8 @@
  */
 var BattleCardSprite = cc.Sprite.extend({
     cardIndex:0,
-    cardID:0,
-    cardData:null,
     touchCallBack:null,
     touchCallBackTarget:null,
-    isplayer:false,
 
     touchEnable:false,
     actionEnable:false,
@@ -87,7 +84,7 @@ var BattleCardSprite = cc.Sprite.extend({
         }
         else
         {
-            this.setColor(cc.color(255, 255,255));
+            this.setColor(cc.color(255, 255, 255));
         }
     },
 
@@ -117,19 +114,16 @@ var BattleCardSprite = cc.Sprite.extend({
 
     onSelected:function(callback, target)
     {
-        if(this.isplayer)
-        {
-            var color = this.getColor();
-            var action = new cc.Sequence(
-                //new cc.TintTo(0.2, 0, 255, 0),
-                //new cc.TintTo(0.2, color.r, color.g, color.b),
-                new cc.FadeOut(0.2),
-                new cc.CallFunc(callback, target),
-                new cc.FadeIn(0.2),
-                new cc.DelayTime(0.1)
-            );
+        var color = this.getColor();
+        var action = new cc.Sequence(
+            //new cc.TintTo(0.2, 0, 255, 0),
+            //new cc.TintTo(0.2, color.r, color.g, color.b),
+            new cc.FadeOut(0.2),
+            new cc.CallFunc(callback, target),
+            new cc.FadeIn(0.2),
+            new cc.DelayTime(0.1)
+        );
 
-            this.runAction(action);
-        }
+        this.runAction(action);
     }
 })

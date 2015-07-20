@@ -2,11 +2,12 @@
  * Created by Administrator on 2015/7/18.
  */
 
-var g_MaxSkillCount = 4;
+var g_MaxSkillCount = 3;
 var g_CardThumbSize = 64;
 var BattleSkillPanelLayer = BaseLayer.extend({
     cardThumb:null,
     skillList:[],
+    moveAction:null,
     curCardID:0,
 
     init:function()
@@ -17,10 +18,16 @@ var BattleSkillPanelLayer = BaseLayer.extend({
 
         for(var i = 0; i < g_MaxSkillCount; ++i)
         {
-            this.skillList.push(new cc.Sprite());
+            this.skillList.push(new CardActionSprite());
             this.skillList[i].setPosition(80 + 70 * i, 0);
             this.addChild(this.skillList[i], g_GameZOrder.ui);
         }
+
+        this.moveAction = new CardActionSprite(s_moveicon);
+        this.moveAction.setAnchorPoint(1, 0);
+        this.moveAction.setPosition(360, 0);
+        this.moveAction.setEnable(false);
+        this.addChild(this.moveAction, g_GameZOrder.ui);
     },
 
     updateWithCard:function(cardid)

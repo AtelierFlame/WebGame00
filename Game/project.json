@@ -15,6 +15,10 @@
         "src/Card/PlayerCardData.js",
         "src/Card/CardListConfig.js",
         "src/Card/BattleCardSprite.js",
+        "src/Card/CardActionSprite.js",
+
+        "src/GameManager/GameManager.js",
+        "src/GameManager/BattleManager.js",
 
         "src/StateMachine/State.js",
         "src/StateMachine/StateMachine.js",
@@ -25,7 +29,6 @@
         "src/StateMachine/GameState/BattlePreActionState.js",
         "src/StateMachine/GameState/BattleActionState.js",
 
-        "src/GameManager/GameManager.js",
         "src/GameManager/GameInstance.js",
 
         "src/GameLayer/BaseLayer.js",

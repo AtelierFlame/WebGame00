@@ -12,13 +12,13 @@ var BattleStartState = State.extend({
     {
         this._super(stateName);
 
-        this.stateOwner.initCards();
-        this.stateOwner.refreshCards();
+        this.stateOwner.loadCardsData();
+        this.stateOwner.cardLayer.initCardSprites();
 
         if(this.stateOwner.openingPerform)
         {
             window.setTimeout(this.performEnded, 4000, this.stateOwner);
-            this.stateOwner.openingPerformance();
+            this.stateOwner.cardLayer.openingPerformance();
         }
         else
         {
@@ -28,7 +28,7 @@ var BattleStartState = State.extend({
 
     performEnded:function(owner)
     {
-        owner.notifyBattleStart();
+        owner.readyForBattle();
     }
 });
 

@@ -12,36 +12,26 @@ var g_GameZOrder =
     label:500,
 }
 
-var GameManager = (function()
-{
-    var instance;
-    var stateMachine;
+var GameManager = cc.Class.extend({
+    stateMachine:null,
 
-    function constructor()
+    ctor:function()
     {
-        stateMachine = new StateMachine(this);
+        this.stateMachine = new StateMachine(this);
+    },
 
-        return{
-            GetStateMachine:function()
-            {
-                return stateMachine;
-            },
+    gotoState:function(state)
+    {
+        this.stateMachine.GotoState(state);
+    }
+})
 
-            GotoState:function(state)
-            {
-                stateMachine.GotoState(state);
-            }
-        };
+GameManager.GetInstance = function()
+{
+    if(!this.instance)
+    {
+        this.instance = this.instance || new GameManager();
     }
 
-    return{
-        GetInstance:function()
-        {
-            if(instance == null)
-            {
-                instance = constructor();
-            }
-            return instance;
-        }
-    }
-})();
+    return this.instance;
+}

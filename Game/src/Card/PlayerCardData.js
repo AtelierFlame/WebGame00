@@ -13,7 +13,7 @@ var PlayerCardData = cc.Class.extend({
     strong:0,
     defence:0,
     abilitypower:0,
-    ablilitydefence:0,
+    abilitydefence:0,
     dexterity:0,
     mental:0,
     minrange:1,
@@ -21,13 +21,14 @@ var PlayerCardData = cc.Class.extend({
 
     copy:function(data)
     {
+        this.cardID = data.id;
         this.hitpoint = data.hitpoint;
         this.maxHitpoint = data.maxHitpoint;
         this.stamina = data.stamina;
         this.strong = data.strong;
         this.defence = data.defence;
         this.abilitypower = data.abilitypower;
-        this.ablilitydefence = data.ablilitydefence;
+        this.abilitydefence = data.abilitydefence;
         this.dexterity = data.dexterity;
         this.mental = data.mental;
         this.minrange = data.minrange;

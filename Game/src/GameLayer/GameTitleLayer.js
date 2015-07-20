@@ -40,6 +40,6 @@ var GameTitleLayer = BaseLayer.extend({
 
     onGameStart:function()
     {
-        GameManager.GetInstance().GotoState(GameBattleState.GetInstance());
+        GameManager.GetInstance().gotoState(GameBattleState.GetInstance());
     }
 });

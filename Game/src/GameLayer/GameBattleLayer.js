@@ -49,6 +49,7 @@ var GameBattleLayer = BaseLayer.extend({
         this.roundcount.setAnchorPoint(0.5, 0.5);
         this.roundcount.setPosition(g_OriginCanvasWidth / 2, g_OriginCanvasHeight - 25);
         this.addChild(this.roundcount, g_GameZOrder.label);
+        BattleManager.GetInstance().setRoundLabel(this.roundcount);
 
         this.menu = new cc.Sprite(s_menu);
         this.menu.setAnchorPoint(0, 0);
@@ -60,12 +61,14 @@ var GameBattleLayer = BaseLayer.extend({
         this.skillpanel.setPosition(20, 8);
         this.menu.addChild(this.skillpanel, g_GameZOrder.ui);
         this.skillpanel.init();
+        BattleManager.GetInstance().setSkillLayer(this.skillpanel);
 
         this.infopanel = new BattleCardInfoPanelLayer();
         this.infopanel.setContentSize(360, 64);
         this.infopanel.setPosition(420, 8);
         this.menu.addChild(this.infopanel, g_GameZOrder.ui);
         this.infopanel.init();
+        BattleManager.GetInstance().setInfoLayer(this.infopanel);
     },
 
     initBattleCards:function()
@@ -75,10 +78,13 @@ var GameBattleLayer = BaseLayer.extend({
         this.cardlayer.setPosition(g_OriginCanvasWidth / 2, g_OriginCanvasHeight / 2);
         this.addChild(this.cardlayer, g_GameZOrder.card);
 
-        this.cardlayer.skillpanel = this.skillpanel;
-        this.cardlayer.infopanel = this.infopanel;
-        this.cardlayer.roundcount = this.roundcount;
-
         this.cardlayer.init();
+        BattleManager.GetInstance().setCardLayer(this.cardlayer);
+    },
+
+    startBattle:function()
+    {
+        BattleManager.GetInstance().gotoState(BattleStartState.GetInstance());
     }
+
 })

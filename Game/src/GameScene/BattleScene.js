@@ -11,5 +11,7 @@ var BattleScene = cc.Scene.extend({
         this.battleLayer = new GameBattleLayer();
         this.addChild(this.battleLayer);
         this.battleLayer.init();
+
+        this.battleLayer.startBattle();
     }
 })

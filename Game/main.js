@@ -12,7 +12,7 @@ cc.game.onStart = function()
 
     cc.LoaderScene.preload(g_resources, function ()
     {
-        GameManager.GetInstance().GotoState(GameStartState.GetInstance());
+        GameManager.GetInstance().gotoState(GameStartState.GetInstance());
     }, this);
 
     GameInstance.getInstance().AdjustSizeForWindow();

@@ -2,7 +2,7 @@
  * Created by Administrator on 2015/7/19.
  */
 var BattlePreActionState = State.extend({
-    curCard:null,
+    curCardSprite:null,
 
     ctor:function()
     {
@@ -14,11 +14,11 @@ var BattlePreActionState = State.extend({
     {
         this._super(stateName);
 
-        this.stateOwner.enableActionCards(-1, false);
-        if(this.curCard != null)
+        this.stateOwner.cardLayer.enableActionCards(-1, false);
+        if(this.curCardSprite != null)
         {
-            this.stateOwner.enableActionCards(this.curCard.cardIndex, true);
-            this.curCard.onSelected(this.stateOwner.notifyCardChange, this.stateOwner);
+            this.stateOwner.cardLayer.enableActionCards(this.curCardSprite.cardIndex, true);
+            this.curCardSprite.onSelected(this.stateOwner.notifySelectedCardChange, this.stateOwner);
         }
     },
 

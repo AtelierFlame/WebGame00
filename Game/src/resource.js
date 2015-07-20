@@ -18,6 +18,10 @@ var s_vs = "vs.png"
 var s_round = "round.png"
 var s_menu = "menu.png"
 var s_roundcount = "roundcount.png"
+var s_moveicon = "move.png"
+
+var s_fontpng = "font_0.png"
+var s_font = "font.fnt"
 
 var g_resources = [
     //image
@@ -41,11 +45,13 @@ var g_resources = [
     s_round,
     s_menu,
     s_roundcount,
+    s_moveicon,
 
     //plist
 
     //fnt
-
+    s_fontpng,
+    s_font,
     //tmx
 
     //bgm

@@ -1,8 +1,6 @@
 /**
  * Created by Administrator on 2015/7/18.
  */
-var g_BattleCardListCount = 4;
-
 var BattleCardLayer = BaseLayer.extend({
     statemachine:null,
 
@@ -35,12 +33,12 @@ var BattleCardLayer = BaseLayer.extend({
         this.spriteListRight = new Array();
         this.cardActionSequence = new Array();
 
-        for(var i = 0; i < g_BattleCardListCount; ++i)
+        for(var i = 0; i < g_CardListSideSize; ++i)
         {
             // left sprites
             this.spriteListLeft.push(new BattleCardSprite());
             this.spriteListLeft[i].setScale(0.7, 0.7);
-            if(this.openingPerform)
+            if(BattleManager.GetInstance().openingPerform)
             {
                 this.spriteListLeft[i].setPosition(-200, 140);
             }
@@ -49,21 +47,19 @@ var BattleCardLayer = BaseLayer.extend({
                 this.spriteListLeft[i].setPosition(this.cardPosList[i]);
             }
             this.spriteListLeft[i].initTouchCallBack(this.onCardTouch, this);
-            this.addChild(this.spriteListLeft[i], g_GameZOrder.card + g_BattleCardListCount - i);
+            this.addChild(this.spriteListLeft[i], g_GameZOrder.card + g_CardListSideSize - i);
 
             // right sprites
             this.spriteListRight.push(new BattleCardSprite());
             this.spriteListRight[i].setScale(0.7, 0.7);
-            this.spriteListRight[i].setPosition(this.cardPosList[i + g_BattleCardListCount]);
-            if(this.openingPerform)
+            this.spriteListRight[i].setPosition(this.cardPosList[i + g_CardListSideSize]);
+            if(BattleManager.GetInstance().openingPerform)
             {
                 this.spriteListRight[i].setOpacity(0);
             }
             this.spriteListRight[i].initTouchCallBack(this.onCardTouch, this);
-            this.addChild(this.spriteListRight[i], g_GameZOrder.card + g_BattleCardListCount - i);
+            this.addChild(this.spriteListRight[i], g_GameZOrder.card + g_CardListSideSize - i);
         }
-
-        this.statemachine.GotoState(BattleStartState.GetInstance());
     },
 
     initCardPostionList:function()
@@ -78,103 +74,60 @@ var BattleCardLayer = BaseLayer.extend({
         this.cardPosList.push(cc.p(780, 140));
     },
 
-    initCards:function()
+    initCardSprites:function()
     {
-        this.spriteListLeft[0].cardData = new PlayerCardData();
-        this.spriteListLeft[0].cardIndex = 0;
-        this.spriteListLeft[0].setCardID(1);
-        this.spriteListLeft[0].isplayer = true;
-        this.spriteListLeft[0].cardData.copy(g_CardList[this.spriteListLeft[0].getCardID()]);
-
-        this.spriteListLeft[1].cardData = new PlayerCardData();
-        this.spriteListLeft[1].cardIndex = 1;
-        this.spriteListLeft[1].setCardID(2);
-        this.spriteListLeft[1].isplayer = true;
-        this.spriteListLeft[1].cardData.copy(g_CardList[this.spriteListLeft[1].getCardID()]);
-
-        this.spriteListLeft[2].cardData = new PlayerCardData();
-        this.spriteListLeft[2].cardIndex = 2;
-        this.spriteListLeft[2].setCardID(3);
-        this.spriteListLeft[2].isplayer = true;
-        this.spriteListLeft[2].cardData.copy(g_CardList[this.spriteListLeft[2].getCardID()]);
-
-        this.spriteListLeft[3].cardData = new PlayerCardData();
-        this.spriteListLeft[3].cardIndex = 3;
-        this.spriteListLeft[3].setCardID(4);
-        this.spriteListLeft[3].isplayer = true;
-        this.spriteListLeft[3].cardData.copy(g_CardList[this.spriteListLeft[3].getCardID()]);
-
-        this.spriteListRight[0].cardData = new PlayerCardData();
-        this.spriteListRight[0].cardIndex = 4;
-        this.spriteListRight[0].setCardID(5);
-        this.spriteListRight[0].isplayer = false;
-        this.spriteListRight[0].cardData.copy(g_CardList[this.spriteListRight[0].getCardID()]);
-
-        this.spriteListRight[1].cardData = new PlayerCardData();
-        this.spriteListRight[1].cardIndex = 5;
-        this.spriteListRight[1].setCardID(6);
-        this.spriteListRight[1].isplayer = false;
-        this.spriteListRight[1].cardData.copy(g_CardList[this.spriteListRight[1].getCardID()]);
-
-        this.spriteListRight[2].cardData = new PlayerCardData();
-        this.spriteListRight[2].cardIndex = 6;
-        this.spriteListRight[2].setCardID(7);
-        this.spriteListRight[2].isplayer = false;
-        this.spriteListRight[2].cardData.copy(g_CardList[this.spriteListRight[2].getCardID()]);
-
-        this.spriteListRight[3].cardData = new PlayerCardData();
-        this.spriteListRight[3].cardIndex = 7;
-        this.spriteListRight[3].setCardID(8);
-        this.spriteListRight[3].isplayer = false;
-        this.spriteListRight[3].cardData.copy(g_CardList[this.spriteListRight[3].getCardID()]);
-
-
-        this.skillpanel.updateWithCard(this.getSelectCardID());
-    },
-
-    refreshCards:function()
-    {
-        for(var i = 0; i < g_BattleCardListCount; ++i)
+        for(var i = 0; i < g_CardListSideSize; ++i)
         {
             if(this.spriteListLeft[i] != null)
             {
-                if(g_CardList[this.spriteListLeft[i].getCardID()] != null)
+                this.spriteListLeft[i].cardIndex = i;
+                if(BattleManager.GetInstance().getCardData(i) != null)
                 {
-                    this.spriteListLeft[i].initWithFile(g_CardList[this.spriteListLeft[i].getCardID()].image);
+                    this.spriteListLeft[i].initWithFile(
+                        g_CardList[BattleManager.GetInstance().getCardData(i).cardID].image);
                     this.spriteListLeft[i].setAnchorPoint(0, 0);
                 }
             }
 
             if(this.spriteListRight[i] != null)
             {
-                if(g_CardList[this.spriteListRight[i].getCardID()] != null)
+                this.spriteListRight[i].cardIndex = i + g_CardListSideSize;
+                if(BattleManager.GetInstance().getCardData(i + g_CardListSideSize) != null)
                 {
-                    this.spriteListRight[i].initWithFile(g_CardList[this.spriteListRight[i].getCardID()].image);
+                    this.spriteListRight[i].initWithFile(
+                        g_CardList[BattleManager.GetInstance().getCardData(i + g_CardListSideSize).cardID].image);
                     this.spriteListRight[i].setAnchorPoint(1, 0);
                 }
             }
         }
+
+        //this.skillpanel.updateWithCard(this.getSelectCardID());
+    },
+
+    refreshCards:function()
+    {
+
     },
 
     getCardByIndex:function(index)
     {
-        if(index < 0 && index >= g_BattleCardListCount * 2)
+        if(index < 0 && index >= g_CardListSize * 2)
         {
             return null;
         }
-        if(index < g_BattleCardListCount)
+        if(index < g_CardListSideSize)
         {
             return this.spriteListLeft[index];
         }
         else
         {
-            return this.spriteListRight[index - g_BattleCardListCount];
+            return this.spriteListRight[index - g_CardListSideSize];
         }
     },
 
     openingPerformance:function()
     {
-        for(var i = 0; i < g_BattleCardListCount; ++i)
+        for(var i = 0; i < g_CardListSideSize; ++i)
         {
             this.spriteListLeft[i].runAction(new cc.sequence(
                 new cc.DelayTime(0.5 * i),
@@ -182,10 +135,10 @@ var BattleCardLayer = BaseLayer.extend({
             ));
         }
 
-        for(var i = g_BattleCardListCount - 1; i >= 0; --i)
+        for(var i = g_CardListSideSize - 1; i >= 0; --i)
         {
             this.spriteListRight[i].runAction(new cc.sequence(
-                new cc.DelayTime(0.5 * (g_BattleCardListCount - i - 1) + 0.5 * g_BattleCardListCount),
+                new cc.DelayTime(0.5 * (g_CardListSideSize - i - 1) + 0.5 * g_CardListSideSize),
                 new cc.FadeIn(0.5)
             ));
         }
@@ -207,29 +160,17 @@ var BattleCardLayer = BaseLayer.extend({
 
     getCardZOrderByOrder:function(order)
     {
-        return g_GameZOrder.card + g_BattleCardListCount - order;
+        return g_GameZOrder.card + g_CardListSideSize - order;
     },
 
     getCardOrderByZOrder:function(order)
     {
-        return Math.abs(order - g_GameZOrder.card - g_BattleCardListCount);
-    },
-
-    notifyCardChange:function(target)
-    {
-        if(this.getCardOrderByZOrder(target.getLocalZOrder()) != 0)
-        {
-            this.setCardTopOrder(target.cardIndex);
-        }
-        if(this.skillpanel != null)
-        {
-            this.skillpanel.updateWithCard(target.cardID);
-        }
+        return Math.abs(order - g_GameZOrder.card - g_CardListSideSize);
     },
 
     setCardTopOrder:function(index)
     {
-        if(index < g_BattleCardListCount)
+        if(index < g_CardListSideSize)
         {
             switch(index)
             {
@@ -261,7 +202,7 @@ var BattleCardLayer = BaseLayer.extend({
         }
         else
         {
-            index = index - g_BattleCardListCount;
+            index = index - g_CardListSideSize;
             switch(index)
             {
                 case 0:
@@ -291,92 +232,9 @@ var BattleCardLayer = BaseLayer.extend({
             }
         }
     },
-
-    setRoundCount:function(round)
-    {
-        cc.log("Round Start " + round);
-        this.roundcount.setString(round);
-    },
-
-    notifyBattleStart:function()
-    {
-        BattlePreRoundState.GetInstance().setRound(this.curRoundCount);
-        this.statemachine.GotoState(BattlePreRoundState.GetInstance());
-    },
-
-    initCardActionSequence:function()
-    {
-        this.cardActionSequence = new Array();
-        var cardSpeedList = new Array();
-        for(var i = 0; i < g_BattleCardListCount * 2; ++i)
-        {
-            this.cardActionSequence.push(i);
-            if(i < g_BattleCardListCount)
-            {
-                if(this.spriteListLeft[i].getCardID() > 0)
-                {
-                    cardSpeedList.push(this.spriteListLeft[i].cardData.getSpeed());
-                }
-                else
-                {
-                    cardSpeedList.push(0);
-                }
-            }
-            else
-            {
-                if(this.spriteListRight[i - g_BattleCardListCount].getCardID() > 0)
-                {
-                    cardSpeedList.push(this.spriteListRight[i - g_BattleCardListCount].cardData.getSpeed());
-                }
-                else
-                {
-                    cardSpeedList.push(0);
-                }
-            }
-        }
-
-        cc.assert(this.cardActionSequence.length == cardSpeedList.length);
-        for(var i = 0; i < this.cardActionSequence.length; ++i )
-        {
-            for(var j = i; j < this.cardActionSequence.length; ++j)
-            {
-                if(cardSpeedList[i] < cardSpeedList[j])
-                {
-                    var temp = cardSpeedList[i];
-                    cardSpeedList[i] = cardSpeedList[j];
-                    cardSpeedList[j] = temp;
-
-                    var tempIdx = this.cardActionSequence[i];
-                    this.cardActionSequence[i] = this.cardActionSequence[j];
-                    this.cardActionSequence[j] = tempIdx;
-                }
-            }
-        }
-    },
-
-    selectNextCard:function()
-    {
-        if(this.cardActionSequence.length == 0)
-        {
-            return;
-        }
-
-        var index = this.cardActionSequence.shift();
-        if(this.getCardByIndex(index).getCardID() <= 0)
-        {
-            cc.log("round over!");
-        }
-        else
-        {
-            this.curSelectCardIndex = index;
-            BattlePreActionState.GetInstance().curCard = this.getCardByIndex(this.curSelectCardIndex);
-            this.statemachine.GotoState(BattlePreActionState.GetInstance());
-        }
-    },
-
     enableActionCards:function(index, enable)
     {
-        if(index >= 0 && index < g_BattleCardListCount * 2)
+        if(index >= 0 && index < g_CardListSideSize * 2)
         {
             if(this.getCardByIndex(index) != null)
             {
@@ -385,7 +243,7 @@ var BattleCardLayer = BaseLayer.extend({
         }
         else
         {
-            for(var i = 0; i < g_BattleCardListCount; ++i)
+            for(var i = 0; i < g_CardListSideSize; ++i)
             {
                 this.spriteListLeft[i].setActionEnable(enable);
                 this.spriteListRight[i].setActionEnable(enable);
