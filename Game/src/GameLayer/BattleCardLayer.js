@@ -10,9 +10,6 @@ var BattleCardLayer = BaseLayer.extend({
     spriteListRight:[],
 
     curRoundCount:1,
-    curSelectCardIndex:0,
-
-    cardActionSequence:[],
 
     skillpanel:null,
     infopanel:null,
@@ -28,7 +25,6 @@ var BattleCardLayer = BaseLayer.extend({
         this.initCardPostionList();
         this.spriteListLeft = new Array();
         this.spriteListRight = new Array();
-        this.cardActionSequence = new Array();
 
         for(var i = 0; i < g_CardListSideSize; ++i)
         {
@@ -101,11 +97,6 @@ var BattleCardLayer = BaseLayer.extend({
         //this.skillpanel.updateWithCard(this.getSelectCardID());
     },
 
-    refreshCards:function()
-    {
-
-    },
-
     getCardByIndex:function(index)
     {
         if(index < 0 && index >= g_CardListSize * 2)
@@ -119,6 +110,25 @@ var BattleCardLayer = BaseLayer.extend({
         else
         {
             return this.spriteListRight[index - g_CardListSideSize];
+        }
+    },
+
+    setCardByIndex:function(index, card)
+    {
+        if(index < 0 && index >= g_CardListSize * 2)
+        {
+            return;
+        }
+
+        if(index < g_CardListSideSize)
+        {
+            this.spriteListLeft[index] = card;
+            this.spriteListLeft[index].cardIndex = index;
+        }
+        else
+        {
+            this.spriteListRight[index - g_CardListSideSize] = card;
+            this.spriteListRight[index - g_CardListSideSize].cardIndex = index - g_CardListSideSize;
         }
     },
 
@@ -139,15 +149,6 @@ var BattleCardLayer = BaseLayer.extend({
                 new cc.FadeIn(0.5)
             ));
         }
-    },
-
-    getSelectCardID:function()
-    {
-        if(this.getCardByIndex(this.curSelectCardIndex) != null)
-        {
-            return this.getCardByIndex(this.curSelectCardIndex).getCardID();
-        }
-        return -1;
     },
 
     onCardTouch:function(card)
@@ -229,6 +230,7 @@ var BattleCardLayer = BaseLayer.extend({
             }
         }
     },
+
     enableActionCards:function(index, enable)
     {
         if(index >= 0 && index < g_CardListSideSize * 2)
@@ -247,4 +249,19 @@ var BattleCardLayer = BaseLayer.extend({
             }
         }
     },
+
+    notifyIndexChange:function(idx, targetidx)
+    {
+        var card = this.getCardByIndex(idx);
+        var targetcard = this.getCardByIndex(targetidx);
+
+        this.setCardByIndex(targetidx, card);
+        this.setCardByIndex(idx, targetcard);
+
+        var targetpos =  targetcard.getPosition();
+        targetcard.setPosition(card.getPosition());
+        card.setPosition(targetpos);
+
+        this.setCardTopOrder(targetidx);
+    }
 })

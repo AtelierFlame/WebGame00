@@ -115,9 +115,9 @@ var BattleCardSprite = cc.Sprite.extend({
     onSelected:function(callback, target)
     {
         var action = new cc.Sequence(
-            new cc.FadeOut(0.2),
+            new cc.FadeOut(0.5),
             new cc.CallFunc(callback, target),
-            new cc.FadeIn(0.2),
+            new cc.FadeIn(0.5),
             new cc.DelayTime(0.1)
         );
 

@@ -4,12 +4,15 @@
 var g_CardListSize = 8;
 var g_CardListSideSize = 4;
 
-var BattleActionType =
+if(typeof BattleActionType == "undefined")
 {
-    BAT_Move:0,
-    BAT_Defence:1,
-    BAT_Attak:2,
-    BAT_Skill:3
+    var BattleActionType =
+    {
+        BAT_Move:0,
+        BAT_Defence:1,
+        BAT_Attak:2,
+        BAT_Skill:3
+    }
 }
 
 var BattleManager = cc.Class.extend({
@@ -167,13 +170,42 @@ var BattleManager = cc.Class.extend({
             this.infoLayer.updateFromCardData(this.cardList[target.cardIndex]);
         }
 
-        this.startBattleAction(0, this.curSelectCardIndex, [this.curSelectCardIndex]);
+        this.startBattleAction(0, this.curSelectCardIndex, [this.curSelectCardIndex + 1]);
     },
 
     startBattleAction:function(type, cardidx, targetidx)
     {
-        BattleActionState.GetInstance().setAction(type, cardidx, targetidx);
-        this.gotoState(BattleActionState.GetInstance());
+        if(cardidx == 1)
+        {
+            BattleActionState.GetInstance().setAction(type, cardidx, targetidx);
+            this.gotoState(BattleActionState.GetInstance());
+        }
+    },
+
+    notifyIndexChange:function(idx, targetidx)
+    {
+        if(idx == targetidx)
+        {
+            return;
+        }
+
+        var cardData = this.cardList[targetidx];
+        this.cardList[targetidx] = this.cardList[idx];
+        this.cardList[idx] = cardData;
+
+        for(var i = 0; i < this.cardActionSequence.length; ++i)
+        {
+            if(this.cardActionSequence[i] == idx)
+            {
+                this.cardActionSequence[i] = targetidx;
+            }
+            if(this.cardActionSequence[i] == targetidx)
+            {
+                this.cardActionSequence[i] = idx;
+            }
+        }
+
+        this.cardLayer.notifyIndexChange(idx, targetidx);
     }
 
 });
