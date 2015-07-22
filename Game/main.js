@@ -12,6 +12,7 @@ cc.game.onStart = function()
 
     cc.LoaderScene.preload(g_resources, function ()
     {
+        cc.spriteFrameCache.addSpriteFrames(s_uiplist);
         GameManager.GetInstance().gotoState(GameStartState.GetInstance());
     }, this);
 

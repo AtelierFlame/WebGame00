@@ -10,6 +10,8 @@ var g_GameZOrder =
     ui:200,
 
     label:500,
+
+    performance:1000,
 }
 
 var GameManager = cc.Class.extend({

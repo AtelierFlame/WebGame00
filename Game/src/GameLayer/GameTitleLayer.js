@@ -20,14 +20,14 @@ var GameTitleLayer = BaseLayer.extend({
         this.background.setScale(size.height / this.background.getContentSize().height);
         this.addChild(this.background, g_GameZOrder.bg);
 
-        this.titlelabal = new cc.Sprite(s_titlepic);
+        this.titlelabal = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("title.png"));
         this.titlelabal.setAnchorPoint(0, 0.5);
         this.titlelabal.setPosition(60, 360);
         this.addChild(this.titlelabal, g_GameZOrder.bg + 1);
 
         this.startbtn = new cc.MenuItemImage(
-            s_startbtn_bg,
-            s_startbtn,
+            cc.spriteFrameCache.getSpriteFrame("startbtn_bg.png"),
+            cc.spriteFrameCache.getSpriteFrame("startbtn.png"),
             this.onGameStart,
             this);
         this.startbtn.setAnchorPoint(0, 0.5);

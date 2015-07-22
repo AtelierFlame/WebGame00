@@ -15,6 +15,7 @@
         "src/Card/PlayerCardData.js",
         "src/Card/CardListConfig.js",
         "src/Card/BattleCardSprite.js",
+        "src/Card/CardPerformSprite.js",
         "src/Card/CardActionSprite.js",
 
         "src/GameManager/GameManager.js",
@@ -36,6 +37,7 @@
         "src/GameLayer/BattleSkillPanelLayer.js",
         "src/GameLayer/BattleCardInfoPanelLayer.js",
         "src/GameLayer/BattleCardLayer.js",
+        "src/GameLayer/BattlePerformLayer.js",
         "src/GameLayer/GameBattleLayer.js",
         "src/GameScene/BattleScene.js",
 

@@ -8,8 +8,9 @@ var GameBattleLayer = BaseLayer.extend({
     roundbg:null,
     roundcount:null,
     menu:null,
-    cardlayer:null,
 
+    cardlayer:null,
+    performlayer:null,
     skillpanel:null,
     infopanel:null,
 
@@ -35,23 +36,23 @@ var GameBattleLayer = BaseLayer.extend({
 
     initBattleUI:function()
     {
-        this.vsbg = new cc.Sprite(s_vs);
+        this.vsbg = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("vs.png"));
         this.vsbg.setAnchorPoint(0.5, 0.5);
         this.vsbg.setPosition(g_OriginCanvasWidth / 2, g_OriginCanvasHeight - 60)
         this.addChild(this.vsbg, g_GameZOrder.bg + 1);
 
-        this.roundbg = new cc.Sprite(s_round);
+        this.roundbg = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("round.png"));
         this.roundbg.setAnchorPoint(0, 1);
         this.roundbg.setPosition(0, g_OriginCanvasHeight);
         this.addChild(this.roundbg, g_GameZOrder.ui);
 
-        this.roundcount = new cc.LabelAtlas(1, s_roundcount, 35, 50, '0');
+        this.roundcount = new cc.LabelAtlas(1, s_roundnum, 35, 50, '0');
         this.roundcount.setAnchorPoint(0.5, 0.5);
         this.roundcount.setPosition(g_OriginCanvasWidth / 2, g_OriginCanvasHeight - 25);
         this.addChild(this.roundcount, g_GameZOrder.label);
         BattleManager.GetInstance().setRoundLabel(this.roundcount);
 
-        this.menu = new cc.Sprite(s_menu);
+        this.menu = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("menu.png"));
         this.menu.setAnchorPoint(0, 0);
         this.menu.setPosition(0, 0);
         this.addChild(this.menu, g_GameZOrder.ui);
@@ -80,6 +81,14 @@ var GameBattleLayer = BaseLayer.extend({
 
         this.cardlayer.init();
         BattleManager.GetInstance().setCardLayer(this.cardlayer);
+
+        this.performlayer = new BattlePerformLayer();
+        this.performlayer.setAnchorPoint(0.5, 0.5);
+        this.performlayer.setPosition(g_OriginCanvasWidth / 2, g_OriginCanvasHeight / 2);
+        this.addChild(this.performlayer, g_GameZOrder.performance);
+        this.performlayer.setVisible(false);
+
+        BattleManager.GetInstance().setPerformLayer(this.performlayer);
     },
 
     startBattle:function()

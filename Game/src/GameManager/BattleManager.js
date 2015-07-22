@@ -4,6 +4,14 @@
 var g_CardListSize = 8;
 var g_CardListSideSize = 4;
 
+var BattleActionType =
+{
+    BAT_Move:0,
+    BAT_Defence:1,
+    BAT_Attak:2,
+    BAT_Skill:3
+}
+
 var BattleManager = cc.Class.extend({
     stateMachine:null,
 
@@ -11,6 +19,7 @@ var BattleManager = cc.Class.extend({
     cardLayer:null,
     skillLayer:null,
     infoLayer:null,
+    performLayer:null,
 
     openingPerform:false,
     curRoundCount:1,
@@ -43,6 +52,11 @@ var BattleManager = cc.Class.extend({
     setInfoLayer:function(layer)
     {
         this.infoLayer = layer;
+    },
+
+    setPerformLayer:function(layer)
+    {
+        this.performLayer = layer;
     },
 
     setRoundLabel:function(label)
@@ -118,7 +132,6 @@ var BattleManager = cc.Class.extend({
         }
     },
 
-
     selectNextCard:function()
     {
         if(this.cardActionSequence.length == 0)
@@ -153,7 +166,16 @@ var BattleManager = cc.Class.extend({
         {
             this.infoLayer.updateFromCardData(this.cardList[target.cardIndex]);
         }
+
+        this.startBattleAction(0, this.curSelectCardIndex, [this.curSelectCardIndex]);
+    },
+
+    startBattleAction:function(type, cardidx, targetidx)
+    {
+        BattleActionState.GetInstance().setAction(type, cardidx, targetidx);
+        this.gotoState(BattleActionState.GetInstance());
     }
+
 });
 
 BattleManager.GetInstance = function()

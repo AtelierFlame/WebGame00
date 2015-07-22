@@ -8,6 +8,7 @@ var BattleSkillPanelLayer = BaseLayer.extend({
     cardThumb:null,
     skillList:[],
     moveAction:null,
+    defAction:null,
     curCardID:0,
 
     init:function()
@@ -23,11 +24,17 @@ var BattleSkillPanelLayer = BaseLayer.extend({
             this.addChild(this.skillList[i], g_GameZOrder.ui);
         }
 
-        this.moveAction = new CardActionSprite(s_moveicon);
+        this.moveAction = new CardActionSprite(cc.spriteFrameCache.getSpriteFrame("moveicon.png"));
         this.moveAction.setAnchorPoint(1, 0);
         this.moveAction.setPosition(360, 0);
         this.moveAction.setEnable(false);
         this.addChild(this.moveAction, g_GameZOrder.ui);
+
+        this.defAction = new CardActionSprite(cc.spriteFrameCache.getSpriteFrame("deficon.png"));
+        this.defAction.setAnchorPoint(1, 0);
+        this.defAction.setPosition(360, 34);
+        this.defAction.setEnable(false);
+        this.addChild(this.defAction, g_GameZOrder.ui);
     },
 
     updateWithCard:function(cardid)

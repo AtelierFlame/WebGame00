@@ -2,8 +2,6 @@
  * Created by Administrator on 2015/7/18.
  */
 var BattleCardLayer = BaseLayer.extend({
-    statemachine:null,
-
     showBg:true,
     openingPerform:false,
     cardPosList:[],
@@ -23,7 +21,6 @@ var BattleCardLayer = BaseLayer.extend({
     ctor:function()
     {
         this._super();
-        this.statemachine = new StateMachine(this);
     },
 
     init:function()

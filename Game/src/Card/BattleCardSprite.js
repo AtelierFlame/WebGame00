@@ -114,10 +114,7 @@ var BattleCardSprite = cc.Sprite.extend({
 
     onSelected:function(callback, target)
     {
-        var color = this.getColor();
         var action = new cc.Sequence(
-            //new cc.TintTo(0.2, 0, 255, 0),
-            //new cc.TintTo(0.2, color.r, color.g, color.b),
             new cc.FadeOut(0.2),
             new cc.CallFunc(callback, target),
             new cc.FadeIn(0.2),
