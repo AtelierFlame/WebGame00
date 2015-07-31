@@ -5,37 +5,55 @@ var BattleActionState = State.extend({
     cardIdx: -1,
     targetIdx: [],
     actionType: 0,
+    isSuccess:[],
 
     ctor: function () {
         this._super();
         this.stateName = "BattleAction";
     },
 
-    setAction: function (type, idx, idxarray) {
+    setAction: function (type, idx, idxarray, res) {
         this.actionType = type;
         this.cardIdx = idx;
         this.targetIdx = idxarray;
+        this.isSuccess = res;
     },
 
     BeginState: function (stateName) {
         this._super(stateName);
 
+        this.stateOwner.cardLayer.enableActionCards(-1, false);
         this.stateOwner.performLayer.setVisible(true);
         this.stateOwner.performLayer.setCardSprite(this.cardIdx);
 
-        if (this.targetIdx.length > 0) {
+        if (this.targetIdx.length > 0)
+        {
             this.stateOwner.performLayer.setTargetCardSprites(this.targetIdx);
         }
 
         window.setTimeout(this.doPerformance, 500, this);
     },
 
-    doPerformance: function (self) {
+    doPerformance: function (self)
+    {
         var duration = 0;
-        switch (self.actionType) {
+        switch (self.actionType)
+        {
             case BattleActionType.BAT_Move:
-                if (self.targetIdx.length > 0) {
+                if (self.targetIdx.length > 0)
+                {
                     duration = self.stateOwner.performLayer.changePosition(self.cardIdx, self.targetIdx[0]);
+                }
+                break;
+
+            case BattleActionType.BAT_Defence:
+                duration = self.stateOwner.performLayer.setupDefenceEffect(self.cardIdx);
+                break;
+
+            case BattleActionType.BAT_Attack:
+                if (self.targetIdx.length > 0)
+                {
+                    duration = self.stateOwner.performLayer.setupMeleeAttackEffect(self.targetIdx, self.isSuccess);
                 }
                 break;
         }
@@ -43,17 +61,30 @@ var BattleActionState = State.extend({
         window.setTimeout(self.endPerformance, duration, self);
     },
 
-    endPerformance: function (self) {
-        cc.log("End Performance");
-        switch (self.actionType) {
+    endPerformance: function (self)
+    {
+        var duration = 500;
+        switch (self.actionType)
+        {
             case BattleActionType.BAT_Move:
-                if (self.targetIdx.length > 0) {
+                if(self.targetIdx.length > 0)
+                {
                     self.stateOwner.notifyIndexChange(self.cardIdx, self.targetIdx[0]);
+                }
+                break;
+
+            case BattleActionState.BAT_Defence:
+                break;
+
+            case BattleActionType.BAT_Attack:
+                if(self.targetIdx.length > 0)
+                {
+                    duration = self.stateOwner.performLayer.setupMeleeAttackResult(self.targetIdx, self.isSuccess);
                 }
                 break;
         }
 
-        window.setTimeout(self.endAction, 500, self);
+        window.setTimeout(self.endAction, duration, self);
     },
 
     endAction:function(self)

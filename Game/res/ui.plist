@@ -4,6 +4,123 @@
     <dict>
         <key>frames</key>
         <dict>
+            <key>attack.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{358,594},{128,128}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{128,128}}</string>
+                <key>sourceSize</key>
+                <string>{128,128}</string>
+            </dict>
+            <key>attackeffect00.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{228,594},{128,128}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{128,128}}</string>
+                <key>sourceSize</key>
+                <string>{128,128}</string>
+            </dict>
+            <key>attackeffect01.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{376,464},{128,128}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{128,128}}</string>
+                <key>sourceSize</key>
+                <string>{128,128}</string>
+            </dict>
+            <key>attackeffect02.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{246,464},{128,128}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{128,128}}</string>
+                <key>sourceSize</key>
+                <string>{128,128}</string>
+            </dict>
+            <key>attackeffect03.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{376,334},{128,128}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{128,128}}</string>
+                <key>sourceSize</key>
+                <string>{128,128}</string>
+            </dict>
+            <key>attackeffect04.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{246,334},{128,128}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{128,128}}</string>
+                <key>sourceSize</key>
+                <string>{128,128}</string>
+            </dict>
+            <key>attackeffect05.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{376,204},{128,128}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{128,128}}</string>
+                <key>sourceSize</key>
+                <string>{128,128}</string>
+            </dict>
+            <key>attackeffect06.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{246,204},{128,128}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{128,128}}</string>
+                <key>sourceSize</key>
+                <string>{128,128}</string>
+            </dict>
+            <key>attackeffect07.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{116,804},{128,128}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{128,128}}</string>
+                <key>sourceSize</key>
+                <string>{128,128}</string>
+            </dict>
             <key>deficon.png</key>
             <dict>
                 <key>frame</key>
@@ -56,10 +173,23 @@
                 <key>sourceSize</key>
                 <string>{800,130}</string>
             </dict>
+            <key>shield.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{134,934},{86,78}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{7,0},{86,78}}</string>
+                <key>sourceSize</key>
+                <string>{100,78}</string>
+            </dict>
             <key>startbtn.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{134,946},{250,58}}</string>
+                <string>{{246,144},{250,58}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -72,7 +202,7 @@
             <key>startbtn_bg.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{116,886},{250,58}}</string>
+                <string>{{246,84},{250,58}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -85,7 +215,7 @@
             <key>title.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{116,804},{280,80}}</string>
+                <string>{{228,2},{280,80}}</string>
                 <key>offset</key>
                 <string>{-2,0}</string>
                 <key>rotated</key>
@@ -118,7 +248,7 @@
             <key>size</key>
             <string>{512,1024}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:ada237fe281abdeb1fd9c8fc8bd6c93d$</string>
+            <string>$TexturePacker:SmartUpdate:0f39526ef9d9d2073b4b635502ebc9e3$</string>
             <key>textureFileName</key>
             <string>ui.png</string>
         </dict>

@@ -31,9 +31,16 @@ var BaseLayer=cc.Layer.extend({
                 event: cc.EventListener.TOUCH_ONE_BY_ONE,
                 swallowTouches:true,
 
-                onTouchBegan:function()
+                onTouchBegan:function(touch, event)
                 {
-                    return true;
+                    var target = event.getCurrentTarget();
+
+                    if(target.isVisible())
+                    {
+                        return true;
+                    }
+
+                    return false;
                 }
             }, this);
         }
@@ -56,5 +63,19 @@ var BaseLayer=cc.Layer.extend({
     setBgColor:function(color)
     {
         this.bgFrame.setColor(color);
+    },
+
+    shaderBlackAlpha:function(sprite)
+    {
+        if(sprite != null)
+        {
+            var shader = new cc.GLProgram(s_BAshader_vsh, s_BAshader_fsh);
+            shader.addAttribute(cc.ATTRIBUTE_NAME_POSITION, cc.VERTEX_ATTRIB_POSITION);
+            shader.addAttribute(cc.ATTRIBUTE_NAME_COLOR, cc.VERTEX_ATTRIB_COLOR);
+            shader.addAttribute(cc.ATTRIBUTE_NAME_TEX_COORD, cc.VERTEX_ATTRIB_TEX_COORDS);
+            shader.link();
+            shader.updateUniforms();
+            sprite.setShaderProgram(shader);
+        }
     }
 })

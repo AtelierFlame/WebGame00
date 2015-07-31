@@ -73,7 +73,7 @@ var BattleCardLayer = BaseLayer.extend({
         {
             if(this.spriteListLeft[i] != null)
             {
-                this.spriteListLeft[i].cardIndex = i;
+                this.spriteListLeft[i].initCardIndex(i);
                 if(BattleManager.GetInstance().getCardData(i) != null)
                 {
                     this.spriteListLeft[i].initWithFile(
@@ -84,7 +84,7 @@ var BattleCardLayer = BaseLayer.extend({
 
             if(this.spriteListRight[i] != null)
             {
-                this.spriteListRight[i].cardIndex = i + g_CardListSideSize;
+                this.spriteListRight[i].initCardIndex(i + g_CardListSideSize);
                 if(BattleManager.GetInstance().getCardData(i + g_CardListSideSize) != null)
                 {
                     this.spriteListRight[i].initWithFile(
@@ -136,7 +136,7 @@ var BattleCardLayer = BaseLayer.extend({
     {
         for(var i = 0; i < g_CardListSideSize; ++i)
         {
-            this.spriteListLeft[i].runAction(new cc.sequence(
+            this.spriteListLeft[i].runAction(new cc.Sequence(
                 new cc.DelayTime(0.5 * i),
                 new cc.MoveTo(0.5, this.cardPosList[i])
             ));
@@ -144,7 +144,7 @@ var BattleCardLayer = BaseLayer.extend({
 
         for(var i = g_CardListSideSize - 1; i >= 0; --i)
         {
-            this.spriteListRight[i].runAction(new cc.sequence(
+            this.spriteListRight[i].runAction(new cc.Sequence(
                 new cc.DelayTime(0.5 * (g_CardListSideSize - i - 1) + 0.5 * g_CardListSideSize),
                 new cc.FadeIn(0.5)
             ));
@@ -153,7 +153,24 @@ var BattleCardLayer = BaseLayer.extend({
 
     onCardTouch:function(card)
     {
-        card.onSelected(this.notifyCardChange, this);
+        switch(card.actionType)
+        {
+            case BattleActionType.BAT_Move:
+                if(card.cardIndex == BattleManager.GetInstance().curSelectCardIndex)
+                {
+                    break;
+                }
+                BattleManager.GetInstance().handleMoveAction(card.cardIndex);
+                break;
+
+            case BattleActionType.BAT_Attack:
+                if(card.cardIndex == BattleManager.GetInstance().curSelectCardIndex)
+                {
+                    break;
+                }
+                BattleManager.GetInstance().handleAttackAction(card.cardIndex);
+                break;
+        }
     },
 
     getCardZOrderByOrder:function(order)
@@ -174,27 +191,43 @@ var BattleCardLayer = BaseLayer.extend({
             {
                 case 0:
                     this.spriteListLeft[0].setLocalZOrder(this.getCardZOrderByOrder(0));
+                    this.spriteListLeft[0].changeHealthBarPos(true);
                     this.spriteListLeft[1].setLocalZOrder(this.getCardZOrderByOrder(1));
+                    this.spriteListLeft[1].changeHealthBarPos(true);
                     this.spriteListLeft[2].setLocalZOrder(this.getCardZOrderByOrder(2));
+                    this.spriteListLeft[2].changeHealthBarPos(true);
                     this.spriteListLeft[3].setLocalZOrder(this.getCardZOrderByOrder(3));
+                    this.spriteListLeft[3].changeHealthBarPos(true);
                     break;
                 case 1:
                     this.spriteListLeft[0].setLocalZOrder(this.getCardZOrderByOrder(3));
+                    this.spriteListLeft[0].changeHealthBarPos(false);
                     this.spriteListLeft[1].setLocalZOrder(this.getCardZOrderByOrder(0));
+                    this.spriteListLeft[1].changeHealthBarPos(true);
                     this.spriteListLeft[2].setLocalZOrder(this.getCardZOrderByOrder(1));
+                    this.spriteListLeft[2].changeHealthBarPos(true);
                     this.spriteListLeft[3].setLocalZOrder(this.getCardZOrderByOrder(2));
+                    this.spriteListLeft[3].changeHealthBarPos(true);
                     break;
                 case 2:
                     this.spriteListLeft[0].setLocalZOrder(this.getCardZOrderByOrder(2));
+                    this.spriteListLeft[0].changeHealthBarPos(false);
                     this.spriteListLeft[1].setLocalZOrder(this.getCardZOrderByOrder(1));
+                    this.spriteListLeft[1].changeHealthBarPos(false);
                     this.spriteListLeft[2].setLocalZOrder(this.getCardZOrderByOrder(0));
+                    this.spriteListLeft[2].changeHealthBarPos(true);
                     this.spriteListLeft[3].setLocalZOrder(this.getCardZOrderByOrder(3));
+                    this.spriteListLeft[3].changeHealthBarPos(true);
                     break;
                 case 3:
                     this.spriteListLeft[0].setLocalZOrder(this.getCardZOrderByOrder(3));
+                    this.spriteListLeft[0].changeHealthBarPos(false);
                     this.spriteListLeft[1].setLocalZOrder(this.getCardZOrderByOrder(2));
+                    this.spriteListLeft[1].changeHealthBarPos(false);
                     this.spriteListLeft[2].setLocalZOrder(this.getCardZOrderByOrder(1));
+                    this.spriteListLeft[2].changeHealthBarPos(false);
                     this.spriteListLeft[3].setLocalZOrder(this.getCardZOrderByOrder(0));
+                    this.spriteListLeft[3].changeHealthBarPos(true);
                     break;
             }
         }
@@ -205,35 +238,77 @@ var BattleCardLayer = BaseLayer.extend({
             {
                 case 0:
                     this.spriteListRight[0].setLocalZOrder(this.getCardZOrderByOrder(0));
+                    this.spriteListRight[0].changeHealthBarPos(true);
                     this.spriteListRight[1].setLocalZOrder(this.getCardZOrderByOrder(1));
+                    this.spriteListRight[1].changeHealthBarPos(false);
                     this.spriteListRight[2].setLocalZOrder(this.getCardZOrderByOrder(2));
+                    this.spriteListRight[2].changeHealthBarPos(false);
                     this.spriteListRight[3].setLocalZOrder(this.getCardZOrderByOrder(3));
+                    this.spriteListRight[3].changeHealthBarPos(false);
                     break;
                 case 1:
                     this.spriteListRight[0].setLocalZOrder(this.getCardZOrderByOrder(3));
+                    this.spriteListRight[0].changeHealthBarPos(true);
                     this.spriteListRight[1].setLocalZOrder(this.getCardZOrderByOrder(0));
+                    this.spriteListRight[1].changeHealthBarPos(true);
                     this.spriteListRight[2].setLocalZOrder(this.getCardZOrderByOrder(1));
+                    this.spriteListRight[2].changeHealthBarPos(false);
                     this.spriteListRight[3].setLocalZOrder(this.getCardZOrderByOrder(2));
+                    this.spriteListRight[3].changeHealthBarPos(false);
                     break;
                 case 2:
                     this.spriteListRight[0].setLocalZOrder(this.getCardZOrderByOrder(2));
+                    this.spriteListRight[0].changeHealthBarPos(true);
                     this.spriteListRight[1].setLocalZOrder(this.getCardZOrderByOrder(1));
+                    this.spriteListRight[1].changeHealthBarPos(true);
                     this.spriteListRight[2].setLocalZOrder(this.getCardZOrderByOrder(0));
+                    this.spriteListRight[2].changeHealthBarPos(true);
                     this.spriteListRight[3].setLocalZOrder(this.getCardZOrderByOrder(3));
+                    this.spriteListRight[3].changeHealthBarPos(false);
                     break;
                 case 3:
                     this.spriteListRight[0].setLocalZOrder(this.getCardZOrderByOrder(3));
+                    this.spriteListRight[0].changeHealthBarPos(true);
                     this.spriteListRight[1].setLocalZOrder(this.getCardZOrderByOrder(2));
+                    this.spriteListRight[1].changeHealthBarPos(true);
                     this.spriteListRight[2].setLocalZOrder(this.getCardZOrderByOrder(1));
+                    this.spriteListRight[2].changeHealthBarPos(true);
                     this.spriteListRight[3].setLocalZOrder(this.getCardZOrderByOrder(0));
+                    this.spriteListRight[3].changeHealthBarPos(true);
                     break;
             }
         }
     },
 
+    initNonActionCards:function(curindex)
+    {
+        for(var i = 0; i < g_CardListSideSize; ++i)
+        {
+            if(curindex >= g_CardListSideSize)
+            {
+                if(i + g_CardListSideSize == curindex)
+                {
+                    this.spriteListLeft[i].setActionEnable(false);
+                    continue;
+                }
+            }
+            else
+            {
+                if(i == curindex)
+                {
+                    this.spriteListRight[i].setActionEnable(false);
+                    continue;
+                }
+            }
+
+            this.spriteListLeft[i].setActionEnable(false);
+            this.spriteListRight[i].setActionEnable(false);
+        }
+    },
+
     enableActionCards:function(index, enable)
     {
-        if(index >= 0 && index < g_CardListSideSize * 2)
+        if(index >= 0 && index < g_CardListSize)
         {
             if(this.getCardByIndex(index) != null)
             {
@@ -263,5 +338,32 @@ var BattleCardLayer = BaseLayer.extend({
         card.setPosition(targetpos);
 
         this.setCardTopOrder(targetidx);
+    },
+
+    hintMoveAction:function(cardIdx, targetIdxArray)
+    {
+        if(this.getCardByIndex(cardIdx) != null)
+        {
+            this.getCardByIndex(cardIdx).setActionEnable(false);
+        }
+
+        for(var i = 0; i < targetIdxArray.length; ++i)
+        {
+            if(this.getCardByIndex(targetIdxArray[i]) != null)
+            {
+                this.getCardByIndex(targetIdxArray[i]).setSelectable(BattleActionType.BAT_Move);
+            }
+        }
+    },
+
+    hintAttackAction:function(cardIdx, targetIdxArray)
+    {
+        for(var i = 0; i < targetIdxArray.length; ++i)
+        {
+            if(this.getCardByIndex(targetIdxArray[i]) != null)
+            {
+                this.getCardByIndex(targetIdxArray[i]).setSelectable(BattleActionType.BAT_Attack);
+            }
+        }
     }
 })

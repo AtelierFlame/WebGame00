@@ -38,7 +38,7 @@ var g_CardList =[
         dexterity:51,
         mental:100,
         minrange:1,
-        maxrange:2,
+        maxrange:3,
     },
     {
         id:3,

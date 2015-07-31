@@ -29,15 +29,17 @@ var BattleSkillPanelLayer = BaseLayer.extend({
         this.moveAction.setPosition(360, 0);
         this.moveAction.setEnable(false);
         this.addChild(this.moveAction, g_GameZOrder.ui);
+        this.moveAction.initTouchCallBack(BattleManager.GetInstance().handleHintMoveAction, BattleManager.GetInstance());
 
         this.defAction = new CardActionSprite(cc.spriteFrameCache.getSpriteFrame("deficon.png"));
         this.defAction.setAnchorPoint(1, 0);
         this.defAction.setPosition(360, 34);
         this.defAction.setEnable(false);
         this.addChild(this.defAction, g_GameZOrder.ui);
+        this.defAction.initTouchCallBack(BattleManager.GetInstance().handleDefenceAction, BattleManager.GetInstance());
     },
 
-    updateWithCard:function(cardid)
+    updateWithCard:function(cardIdx, cardid)
     {
         if(cardid < 0)
         {
@@ -56,6 +58,21 @@ var BattleSkillPanelLayer = BaseLayer.extend({
             this.cardThumb.setAnchorPoint(0, 0);
             this.cardThumb.setScale(this.cardThumb.getContentSize().width / g_CardThumbSize,
                 this.cardThumb.getContentSize().height / g_CardThumbSize);
+
+            if(cardIdx < g_CardListSideSize)
+            {
+                if(BattleManager.GetInstance().getMoveablePosition(cardIdx).length > 0)
+                {
+                    this.moveAction.setEnable(true);
+                }
+                this.defAction.setEnable(true);
+            }
         }
+    },
+
+    disableActionOrder:function()
+    {
+        this.moveAction.setEnable(false);
+        this.defAction.setEnable(false);
     }
 })

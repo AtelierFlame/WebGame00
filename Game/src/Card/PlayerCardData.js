@@ -1,6 +1,14 @@
 /**
  * Created by Administrator on 2015/7/18.
  */
+
+var CRITICAL_DEFENCE_VALUE = 35;
+var CRITICAL_DAMAGE_REDUCTION = 50;
+var DAMAGE_REDUCTION_MODIFIER_OVER = 3;
+var DAMAGE_REDUCTION_MODIFIER_LESS = 5;
+
+var BASE_HIT_RATIO = 0.6;
+
 var PlayerCardData = cc.Class.extend({
     cardID:0,
     playerCardID:0,
@@ -65,6 +73,11 @@ var PlayerCardData = cc.Class.extend({
         return this.abilitypower;
     },
 
+    getDexterity:function()
+    {
+        return this.dexterity;
+    },
+
     getSpeed:function()
     {
         return this.dexterity;
@@ -85,8 +98,75 @@ var PlayerCardData = cc.Class.extend({
         return this.maxrange;
     },
 
-    isInRange:function(dis)
+    getDamageReduction:function()
     {
-        return dis >= this.getMinRange() && dis <= this.getMaxRange();
+        var def = this.getDefence();
+        var value = 0;
+        if(def > CRITICAL_DEFENCE_VALUE)
+        {
+            value = Math.sqrt(def - CRITICAL_DEFENCE_VALUE) * DAMAGE_REDUCTION_MODIFIER_OVER;
+            value += CRITICAL_DAMAGE_REDUCTION;
+            value /= 100;
+        }
+        else if(def == CRITICAL_DEFENCE_VALUE )
+        {
+            value = CRITICAL_DAMAGE_REDUCTION / 100;
+        }
+        else
+        {
+            value = Math.square(CRITICAL_DEFENCE_VALUE - def) / DAMAGE_REDUCTION_MODIFIER_LESS;
+            value = CRITICAL_DAMAGE_REDUCTION - value;
+            value /= 100;
+        }
+
+        return value;
+    },
+
+    getAttackFloatingRange:function()
+    {
+        var value = Math.sqrt(this.getDexterity());
+
+        return 1 / value;
+    },
+
+    getAttackValue:function()
+    {
+        var minvalue = this.getAttackDamage() * (1 - this.getAttackFloatingRange());
+        var maxvalue = this.getAttackDamage();
+
+        return minvalue + Math.random() * (maxvalue - minvalue);
+    },
+
+    getHitRatio:function(target)
+    {
+        var value = this.getDexterity();
+        var res;
+        if(value > target)
+        {
+            res = ((value - target) / target) * (1 - BASE_HIT_RATIO) + BASE_HIT_RATIO;
+        }
+        else if(value = target)
+        {
+            res = BASE_HIT_RATIO;
+        }
+        else
+        {
+            res = BASE_HIT_RATIO - (target - value) * 2 / target * BASE_HIT_RATIO;
+        }
+
+        if(res < 0)
+        {
+            res = 0;
+        }
+        if(res > 1)
+        {
+            res = 1;
+        }
+        return res;
+    },
+
+    takeDamage:function(damage)
+    {
+        this.hitpoint -= Math.round(damage);
     }
 })

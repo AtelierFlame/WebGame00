@@ -4,7 +4,7 @@
     "showFPS" : false,
     "frameRate" : 60,
     "id" : "gameCanvas",
-    "renderMode" : 1,
+    "renderMode" : 0,
     "engineDir":"../",
 
     "modules" : ["cocos2d"],
@@ -20,6 +20,7 @@
 
         "src/GameManager/GameManager.js",
         "src/GameManager/BattleManager.js",
+        "src/GameManager/GameLabelPool.js",
 
         "src/StateMachine/State.js",
         "src/StateMachine/StateMachine.js",

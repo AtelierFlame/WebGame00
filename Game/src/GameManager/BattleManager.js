@@ -10,7 +10,7 @@ if(typeof BattleActionType == "undefined")
     {
         BAT_Move:0,
         BAT_Defence:1,
-        BAT_Attak:2,
+        BAT_Attack:2,
         BAT_Skill:3
     }
 }
@@ -155,29 +155,30 @@ var BattleManager = cc.Class.extend({
         this.gotoState(BattlePreActionState.GetInstance());
     },
 
-    notifySelectedCardChange:function(target)
+    notifyActionCardChange:function(target)
     {
         if(this.cardLayer.getCardOrderByZOrder(target.getLocalZOrder()) != 0)
         {
             this.cardLayer.setCardTopOrder(target.cardIndex);
+
+            this.handleHintAttackAction();
         }
         if(this.skillLayer != null)
         {
-            this.skillLayer.updateWithCard(this.cardList[target.cardIndex].cardID);
+            this.skillLayer.updateWithCard(target.cardIndex, this.cardList[target.cardIndex].cardID);
         }
         if(this.infoLayer != null)
         {
             this.infoLayer.updateFromCardData(this.cardList[target.cardIndex]);
         }
-
-        this.startBattleAction(0, this.curSelectCardIndex, [this.curSelectCardIndex + 1]);
     },
 
-    startBattleAction:function(type, cardidx, targetidx)
+    startBattleAction:function(type, cardidx, targetidx, res)
     {
+        this.skillLayer.disableActionOrder();
         if(cardidx == 1)
         {
-            BattleActionState.GetInstance().setAction(type, cardidx, targetidx);
+            BattleActionState.GetInstance().setAction(type, cardidx, targetidx, res);
             this.gotoState(BattleActionState.GetInstance());
         }
     },
@@ -206,6 +207,259 @@ var BattleManager = cc.Class.extend({
         }
 
         this.cardLayer.notifyIndexChange(idx, targetidx);
+    },
+
+    getMoveablePosition:function(index)
+    {
+        if(this.cardList[index] == null)
+        {
+            return [];
+        }
+
+        var moveable = new Array();
+        if(index < g_CardListSideSize)
+        {
+            if(index - 1 >= 0 && this.cardList[index - 1] != null)
+            {
+                moveable.push(index - 1);
+            }
+
+            if(index + 1 < g_CardListSideSize && this.cardList[index + 1] != null)
+            {
+                moveable.push(index + 1);
+            }
+        }
+        else
+        {
+            if(index - 1 >= g_CardListSideSize && this.cardList[index - 1] != null)
+            {
+                moveable.push(index - 1);
+            }
+
+            if(index + 1 < g_CardListSize && this.cardList[index + 1] != null)
+            {
+                moveable.push(index + 1);
+            }
+        }
+
+        return moveable;
+    },
+
+    getAttackRangePosition:function(index)
+    {
+        if(this.cardList[index] == null)
+        {
+            return [];
+        }
+
+        var minrange = this.cardList[index].getMinRange();
+        var maxrange = this.cardList[index].getMaxRange();
+        return this.getRangePosition(index, minrange, maxrange, false);
+    },
+
+    getRangePosition:function(index, minrange, maxrange, bSameSide)
+    {
+        var ar = new Array();
+        if(index < g_CardListSideSize)
+        {
+            if(bSameSide)
+            {
+                for(var i = minrange; i <= maxrange; ++i)
+                {
+                    if(index - i >= 0)
+                    {
+                        var right = this.getCardIndexOffset(index, i, false);
+
+                        if(right >= 0 && this.cardList[right] != null)
+                        {
+                            ar.push(right);
+                        }
+                    }
+
+                    if(index + i < g_CardListSideSize)
+                    {
+                        var left = this.getCardIndexOffset(index, i, true);
+
+                        if(left >= 0 && this.cardList[left] != null)
+                        {
+                            ar.push(left);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for(var i = minrange; i <= maxrange; ++i)
+                {
+                    if(index - i < 0)
+                    {
+                        var right = this.getCardIndexOffset(index, i, false);
+
+                        if(right >= 0 && this.cardList[right] != null)
+                        {
+                            ar.push(right);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            if(bSameSide)
+            {
+                for(var i = minrange; i <= maxrange; ++i)
+                {
+                    if(index + i < g_CardListSize)
+                    {
+                        var right = this.getCardIndexOffset(index, i, false);
+
+                        if(right >= 0 && this.cardList[right] != null)
+                        {
+                            ar.push(right);
+                        }
+                    }
+
+                    if(index - i >= g_CardListSideSize)
+                    {
+                        var left = this.getCardIndexOffset(index, i, true);
+
+                        if(left >= 0 && this.cardList[left] != null)
+                        {
+                            ar.push(left);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for(var i = minrange; i <= maxrange; ++i)
+                {
+                    if(index - i < g_CardListSideSize)
+                    {
+                        var left = this.getCardIndexOffset(index, i, true);
+
+                        if(left >= 0 && this.cardList[left] != null)
+                        {
+                            ar.push(left);
+                        }
+                    }
+                }
+            }
+        }
+
+        return ar;
+    },
+
+    getCardIndexOffset:function(index, offset, bLeft)
+    {
+        if(index < g_CardListSideSize)
+        {
+            if(!bLeft)
+            {
+                if(index - offset > 0)
+                {
+                    return index - offset;
+                }
+                else
+                {
+                    if(offset - index <= g_CardListSideSize)
+                    {
+                        return offset - index + g_CardListSideSize - 1;
+                    }
+                }
+            }
+            else
+            {
+                if(index + offset < g_CardListSideSize)
+                {
+                    return index + offset;
+                }
+            }
+        }
+        else
+        {
+            if(bLeft)
+            {
+                if(index - offset >= g_CardListSideSize)
+                {
+                    return index - offset;
+                }
+                else if(index - offset >= 0)
+                {
+                    return g_CardListSideSize - 1 - (index - offset);
+
+                }
+            }
+            else
+            {
+                if(index + offset < g_CardListSize)
+                {
+                    return index + offset;
+                }
+            }
+        }
+
+        return -1;
+    },
+
+    handleHintAttackAction:function()
+    {
+        this.cardLayer.initNonActionCards(this.curSelectCardIndex);
+
+        this.cardLayer.hintAttackAction(this.curSelectCardIndex,
+            this.getAttackRangePosition(this.curSelectCardIndex));
+    },
+
+    handleAttackAction:function(targetIdx)
+    {
+        var res = this.checkAttackResult(targetIdx);
+        this.startBattleAction(BattleActionType.BAT_Attack,
+            this.curSelectCardIndex,
+            [targetIdx],
+            [res]
+        );
+    },
+
+    checkAttackResult:function(targetIdx)
+    {
+        var card = this.cardList[this.curSelectCardIndex];
+        var target = this.cardList[targetIdx];
+
+        if(card != null && target != null)
+        {
+            var ratio = card.getHitRatio(target.getDexterity());
+
+            //return Math.random() <= ratio;
+        }
+
+        return false;
+    },
+
+    handleHintMoveAction:function(card)
+    {
+        this.cardLayer.initNonActionCards(this.curSelectCardIndex);
+
+        this.cardLayer.hintMoveAction(this.curSelectCardIndex,
+            this.getMoveablePosition(this.curSelectCardIndex));
+    },
+
+    handleMoveAction:function(targetIdx)
+    {
+        this.startBattleAction(BattleActionType.BAT_Move,
+            this.curSelectCardIndex,
+            [targetIdx],
+            [true]
+        );
+    },
+
+    handleDefenceAction:function(card)
+    {
+        this.cardLayer.initNonActionCards(this.curSelectCardIndex);
+        this.startBattleAction(BattleActionType.BAT_Defence,
+            this.curSelectCardIndex,
+            [],
+            [true]
+        );
     }
 
 });

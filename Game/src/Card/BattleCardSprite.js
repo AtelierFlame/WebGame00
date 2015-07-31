@@ -6,17 +6,43 @@ var BattleCardSprite = cc.Sprite.extend({
     touchCallBack:null,
     touchCallBackTarget:null,
 
-    touchEnable:false,
     actionEnable:false,
+    actionType:0,
+
+    healthBar:null,
 
     ctor:function()
     {
         this._super();
+
+        this.healthBar = new cc.LayerColor(cc.color(255, 128, 0));
+        this.healthBar.setAnchorPoint(0, 1);
+        this.healthBar.setContentSize(7, 70);
+        this.healthBar.setPosition(5, 180);
+        this.addChild(this.healthBar, g_GameZOrder.ui);
     },
 
     rect:function()
     {
         return cc.rect( 0, 0, this._rect.width, this._rect.height );
+    },
+
+    initCardIndex:function(index)
+    {
+        this.cardIndex = index;
+        this.changeHealthBarPos(this.cardIndex < g_CardListSideSize);
+    },
+
+    changeHealthBarPos:function(bLeft)
+    {
+        if(bLeft)
+        {
+            this.healthBar.setPosition(5, 180);
+        }
+        else
+        {
+            this.healthBar.setPosition(205, 180);
+        }
     },
 
     initTouchCallBack:function(callback, target)
@@ -27,7 +53,8 @@ var BattleCardSprite = cc.Sprite.extend({
         cc.eventManager.addListener({
             event:cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches:true,
-            onTouchBegan:this.onTouchBegan
+            onTouchBegan:this.onTouchBegan,
+            onTouchMoved:this.onTouchMoved
         }, this);
     },
 
@@ -38,20 +65,6 @@ var BattleCardSprite = cc.Sprite.extend({
 
         var rect = this.rect();
         return cc.rectContainsPoint(rect, pos);
-    },
-
-    setCardID:function(cardid)
-    {
-        this.cardID = cardid;
-        if(this.cardData != null)
-        {
-            this.cardData.c = this.cardID;
-        }
-    },
-
-    getCardID:function()
-    {
-        return this.cardID;
     },
 
     touchActive:function()
@@ -80,17 +93,45 @@ var BattleCardSprite = cc.Sprite.extend({
         this.actionEnable = enable;
         if(!this.actionEnable)
         {
+            this.stopAllActions();
+            this.setOpacity(255);
             this.setColor(cc.color(128, 128, 128));
+            this.healthBar.setOpacity(128);
         }
         else
         {
             this.setColor(cc.color(255, 255, 255));
+            this.healthBar.setOpacity(255);
         }
     },
 
-    setTouchEnable:function(enable)
+    setSelectable:function(actiontype)
     {
-        this.touchEnable = enable;
+        this.actionType = actiontype;
+
+        var action;
+        switch(this.actionType)
+        {
+            case BattleActionType.BAT_Move:
+                action = new cc.Sequence(
+                    new cc.TintTo(0.4, 128, 255, 128),
+                    new cc.TintTo(0.4, 255, 255, 255)
+                );
+                break;
+
+            case BattleActionType.BAT_Attack:
+                action = new cc.Sequence(
+                    new cc.TintTo(0.4, 255, 64, 64),
+                    new cc.TintTo(0.4, 255, 255, 255)
+                );
+                break;
+        }
+
+        if(action != null)
+        {
+            this.runAction(cc.repeatForever(action));
+            this.setActionEnable(true);
+        }
     },
 
     onTouchBegan:function(touch, event)
@@ -102,7 +143,7 @@ var BattleCardSprite = cc.Sprite.extend({
             return false;
         }
 
-        if(!target.touchEnable)
+        if(!target.actionEnable)
         {
             return false;
         }
@@ -112,7 +153,7 @@ var BattleCardSprite = cc.Sprite.extend({
         return true;
     },
 
-    onSelected:function(callback, target)
+    onTurnOn:function(callback, target)
     {
         var action = new cc.Sequence(
             new cc.FadeOut(0.5),

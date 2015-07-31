@@ -18,7 +18,7 @@ var BattlePreActionState = State.extend({
         if(this.curCardSprite != null)
         {
             this.stateOwner.cardLayer.enableActionCards(this.curCardSprite.cardIndex, true);
-            this.curCardSprite.onSelected(this.stateOwner.notifySelectedCardChange, this.stateOwner);
+            this.curCardSprite.onTurnOn(this.stateOwner.notifyActionCardChange, this.stateOwner);
         }
     },
 
