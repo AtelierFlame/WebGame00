@@ -12,6 +12,9 @@
     "jsList" : [
         "src/resource.js",
 
+        "src/Skill/CardSkillData.js",
+        "src/Skill/SkillListConfig.js",
+
         "src/Card/PlayerCardData.js",
         "src/Card/CardListConfig.js",
         "src/Card/BattleCardSprite.js",

@@ -11,7 +11,6 @@ var BASE_HIT_RATIO = 0.6;
 
 var PlayerCardData = cc.Class.extend({
     cardID:0,
-    playerCardID:0,
 
     cardLevel:1,
 
@@ -27,7 +26,7 @@ var PlayerCardData = cc.Class.extend({
     minrange:1,
     maxrange:1,
 
-    copy:function(data)
+    init:function(data)
     {
         this.cardID = data.id;
         this.hitpoint = data.hitpoint;
@@ -53,6 +52,15 @@ var PlayerCardData = cc.Class.extend({
         return this.maxHitpoint;
     },
 
+    getHitPointPercentage:function()
+    {
+        if(this.maxHitpoint == 0)
+        {
+            return 0;
+        }
+        return this.hitpoint / this.maxHitpoint;
+    },
+
     getStamina:function()
     {
         return this.stamina;
@@ -73,6 +81,11 @@ var PlayerCardData = cc.Class.extend({
         return this.abilitypower;
     },
 
+    getAbilityDefence:function()
+    {
+        return this.abilitydefence;
+    },
+
     getDexterity:function()
     {
         return this.dexterity;
@@ -86,6 +99,11 @@ var PlayerCardData = cc.Class.extend({
     getMental:function()
     {
         return this.mental;
+    },
+
+    getMentalPercentage:function()
+    {
+        return this.mental / 100.0;
     },
 
     getMinRange:function()

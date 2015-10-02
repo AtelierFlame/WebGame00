@@ -4,6 +4,8 @@ var s_roundnum = "roundcount.png"
 var s_damagenum = "damage.png"
 var s_uipng = "ui.png"
 var s_uiplist = "ui.plist"
+var s_skillpng = "skill.png"
+var s_skillplist = "skill.plist"
 
 var s_card_01 = "card/card_01.jpg"
 var s_card_02 = "card/card_02.jpg"
@@ -31,6 +33,7 @@ var g_resources = [
     s_damagenum,
 
     s_uipng,
+    s_skillpng,
 
     s_card_01,
     s_card_02,
@@ -43,6 +46,7 @@ var g_resources = [
 
     //plist
     s_uiplist,
+    s_skillplist,
 
     //fnt
     s_fontpng,

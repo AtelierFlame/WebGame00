@@ -6,6 +6,7 @@ var g_MaxSkillCount = 3;
 var g_CardThumbSize = 64;
 var BattleSkillPanelLayer = BaseLayer.extend({
     cardThumb:null,
+    thumbFrame:null,
     skillList:[],
     moveAction:null,
     defAction:null,
@@ -13,9 +14,16 @@ var BattleSkillPanelLayer = BaseLayer.extend({
 
     init:function()
     {
-        this.cardThumb = new cc.Sprite();
+        this.cardThumb = new CardActionSprite();
         this.cardThumb.setPosition(0, 0);
+        this.cardThumb.setEnable(false);
         this.addChild(this.cardThumb, g_GameZOrder.ui);
+        this.cardThumb.initTouchCallBack(BattleManager.GetInstance().handleHintAttackAction, BattleManager.GetInstance());
+
+        this.thumbFrame = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("thumbframe.png"));
+        this.thumbFrame.setAnchorPoint(0, 0);
+        this.thumbFrame.setPosition(0, 0);
+        this.addChild(this.thumbFrame, g_GameZOrder.ui + 1);
 
         for(var i = 0; i < g_MaxSkillCount; ++i)
         {
@@ -66,6 +74,7 @@ var BattleSkillPanelLayer = BaseLayer.extend({
                     this.moveAction.setEnable(true);
                 }
                 this.defAction.setEnable(true);
+                this.cardThumb.setEnable(true);
             }
         }
     },
@@ -74,5 +83,6 @@ var BattleSkillPanelLayer = BaseLayer.extend({
     {
         this.moveAction.setEnable(false);
         this.defAction.setEnable(false);
+        this.cardThumb.setEnable(false);
     }
 })

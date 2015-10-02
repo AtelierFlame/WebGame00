@@ -79,7 +79,7 @@ var BattleManager = cc.Class.extend({
         for(var i = 0; i < g_CardListSize; ++i)
         {
             this.cardList.push(new PlayerCardData());
-            this.cardList[i].copy(g_CardList[i + 1]);
+            this.cardList[i].init(g_CardList[i + 1]);
         }
     },
 
@@ -429,7 +429,7 @@ var BattleManager = cc.Class.extend({
         {
             var ratio = card.getHitRatio(target.getDexterity());
 
-            //return Math.random() <= ratio;
+            return Math.random() <= ratio;
         }
 
         return false;
