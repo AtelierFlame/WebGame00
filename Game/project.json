@@ -23,6 +23,7 @@
 
         "src/GameManager/GameManager.js",
         "src/GameManager/BattleManager.js",
+        "src/GameManager/AICommandManager.js",
         "src/GameManager/GameLabelPool.js",
 
         "src/StateMachine/State.js",

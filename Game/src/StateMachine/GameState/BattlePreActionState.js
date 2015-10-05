@@ -19,9 +19,28 @@ var BattlePreActionState = State.extend({
         {
             this.stateOwner.cardLayer.enableActionCards(this.curCardSprite.cardIndex, true);
             this.curCardSprite.onTurnOn(this.stateOwner.notifyActionCardChange, this.stateOwner);
+
+            if(BattleManager.GetInstance().isEnemyCard(this.curCardSprite.cardIndex))
+            {
+                window.setTimeout(this.AICommand, 800, this);
+            }
         }
     },
 
+    AICommand:function(self)
+    {
+        cc.log("AI Round");
+        var card = BattleManager.GetInstance().getCardData(self.curCardSprite.cardIndex);
+        if(card != null)
+        {
+            AICommandManager.GetInstance().setCard(card, self.curCardSprite.cardIndex);
+            AICommandManager.GetInstance().selectCommand();
+            //var action = AICommandManager.GetInstance().selectActionType();
+            //var targets = AICommandManager.GetInstance().selectActionTarget();
+            //
+            //BattleManager.GetInstance().excuteAICommand(action, targets);
+        }
+    }
 });
 
 BattlePreActionState.GetInstance = function()

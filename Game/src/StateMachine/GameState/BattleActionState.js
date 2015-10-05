@@ -56,6 +56,13 @@ var BattleActionState = State.extend({
                     duration = self.stateOwner.performLayer.setupMeleeAttackEffect(self.targetIdx, self.isSuccess);
                 }
                 break;
+
+            case BattleActionType.BAT_Skill:
+                if(self.targetIdx.length > 0)
+                {
+                    duration = self.stateOwner.performLayer.setupSkillAttackEffect(self.targetIdx, self.isSuccess);
+                }
+                break;
         }
 
         window.setTimeout(self.endPerformance, duration, self);
@@ -94,7 +101,9 @@ var BattleActionState = State.extend({
 
     EndState:function(stateName)
     {
-        this._super();
+        this._super(stateName);
+
+        this.stateOwner.performLayer.clearTargetCardSprites();
         this.stateOwner.performLayer.setVisible(false);
     }
 });

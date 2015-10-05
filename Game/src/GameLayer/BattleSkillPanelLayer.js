@@ -4,6 +4,8 @@
 
 var g_MaxSkillCount = 3;
 var g_CardThumbSize = 64;
+var g_CardSkillSize = 50;
+
 var BattleSkillPanelLayer = BaseLayer.extend({
     cardThumb:null,
     thumbFrame:null,
@@ -29,7 +31,10 @@ var BattleSkillPanelLayer = BaseLayer.extend({
         {
             this.skillList.push(new CardActionSprite());
             this.skillList[i].setPosition(80 + 70 * i, 0);
+            this.skillList[i].skillindex = i;
             this.addChild(this.skillList[i], g_GameZOrder.ui);
+            this.skillList[i].initTouchCallBack(BattleManager.GetInstance().handleHintSkillAction, BattleManager.GetInstance());
+            this.skillList[i].setEnable(false);
         }
 
         this.moveAction = new CardActionSprite(cc.spriteFrameCache.getSpriteFrame("moveicon.png"));
@@ -47,25 +52,25 @@ var BattleSkillPanelLayer = BaseLayer.extend({
         this.defAction.initTouchCallBack(BattleManager.GetInstance().handleDefenceAction, BattleManager.GetInstance());
     },
 
-    updateWithCard:function(cardIdx, cardid)
+    updateWithCard:function(cardIdx, card)
     {
-        if(cardid < 0)
+        if(card == null)
         {
             return;
         }
 
-        if(cardid == this.curCardID)
+        if(card.cardID == this.curCardID)
         {
             return;
         }
-        this.curCardID = cardid;
+        this.curCardID = card.cardID;
 
-        if(g_CardList[cardid] != null)
+        if(g_CardList[this.curCardID] != null)
         {
-            this.cardThumb.initWithFile(g_CardList[cardid].image, g_CardList[cardid].thumbrect);
+            this.cardThumb.initWithFile(g_CardList[this.curCardID].image, g_CardList[this.curCardID].thumbrect);
             this.cardThumb.setAnchorPoint(0, 0);
-            this.cardThumb.setScale(this.cardThumb.getContentSize().width / g_CardThumbSize,
-                this.cardThumb.getContentSize().height / g_CardThumbSize);
+            this.cardThumb.setScale(g_CardThumbSize / this.cardThumb.getContentSize().width,
+                g_CardThumbSize / this.cardThumb.getContentSize().height);
 
             if(cardIdx < g_CardListSideSize)
             {
@@ -77,6 +82,26 @@ var BattleSkillPanelLayer = BaseLayer.extend({
                 this.cardThumb.setEnable(true);
             }
         }
+
+        this.updateCardSkill(card);
+    },
+
+    updateCardSkill:function(card)
+    {
+        for(var i = 0; i < g_MaxSkillCount; ++i )
+        {
+            if(card.lightskill.length <= i)
+            {
+                break;
+            }
+
+            this.skillList[i].initWithSpriteFrame(
+                cc.spriteFrameCache.getSpriteFrame(g_SkillList[card.lightskill[i].skillID].icon));
+            this.skillList[i].setAnchorPoint(0, 0);
+            this.skillList[i].setScale(g_CardSkillSize / this.skillList[i].getContentSize().width,
+                g_CardSkillSize / this.skillList[i].getContentSize().height);
+            this.skillList[i].setEnable(true);
+        }
     },
 
     disableActionOrder:function()
@@ -84,5 +109,10 @@ var BattleSkillPanelLayer = BaseLayer.extend({
         this.moveAction.setEnable(false);
         this.defAction.setEnable(false);
         this.cardThumb.setEnable(false);
+
+        for(var i = 0; i < g_MaxSkillCount; ++i)
+        {
+            this.skillList[i].setEnable(false);
+        }
     }
 })

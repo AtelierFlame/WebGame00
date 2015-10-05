@@ -7,6 +7,8 @@ var BattlePerformLayer = BaseLayer.extend({
 
     shield:null,
     attack:[],
+    buff:[],
+    debuff:[],
 
     cardPosList:[],
     performSprite:[],
@@ -26,9 +28,9 @@ var BattlePerformLayer = BaseLayer.extend({
         this.addChild(this.shield, g_GameZOrder.ui);
     },
 
-    initAAttackEffect:function()
+    initAttackEffect:function()
     {
-        var eff = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("attack.png"));
+        var eff = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("effectbg.png"));
         eff.setAnchorPoint(0.5, 0.5);
         eff.setOpacity(0);
         this.shaderBlackAlpha(eff);
@@ -36,6 +38,18 @@ var BattlePerformLayer = BaseLayer.extend({
         this.addChild(eff, g_GameZOrder);
 
         this.attack.push(eff);
+    },
+
+    initDebuffEffect:function()
+    {
+        var eff = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("effectbg.png"));
+        eff.setAnchorPoint(0.5, 0.5);
+        eff.setOpacity(0);
+        this.shaderBlackAlpha(eff);
+        eff.setScale(2);
+        this.addChild(eff, g_GameZOrder);
+
+        this.debuff.push(eff);
     },
 
     initCardPostionList:function()
@@ -65,6 +79,7 @@ var BattlePerformLayer = BaseLayer.extend({
         }
         this.performSprite[0].setPosition(this.cardPosList[index]);
         this.performSprite[0].cardIndex = index;
+        this.performSprite[0].setVisible(true);
     },
 
     setTargetCardSprites:function(targets)
@@ -89,6 +104,7 @@ var BattlePerformLayer = BaseLayer.extend({
             }
             this.performSprite[i + 1].setPosition(this.cardPosList[targets[i]]);
             this.performSprite[i + 1].cardIndex = targets[i];
+            this.performSprite[i + 1].setVisible(true);
         }
     },
 
@@ -150,7 +166,7 @@ var BattlePerformLayer = BaseLayer.extend({
         {
             if(this.attack.length < i + 1)
             {
-                this.initAAttackEffect();
+                this.initAttackEffect();
             }
 
             this.attack[i].setOpacity(255);
@@ -173,6 +189,38 @@ var BattlePerformLayer = BaseLayer.extend({
             }
 
             this.initPerformEffect(this.attack[i], "attackeffect", 7, 0.7, 1);
+        }
+
+        return 1200;
+    },
+
+    setupSkillAttackEffect:function(targetArr, resArr)
+    {
+        for(var i = 0; i < targetArr.length; ++i)
+        {
+            if(this.debuff.length < i + 1)
+            {
+                this.initDebuffEffect();
+            }
+
+            this.debuff[i].setOpacity(255);
+            var target = this.getPerformSpriteByCardIndex(targetArr[i]);
+            if(targetArr[i] < g_CardListSideSize)
+            {
+                this.debuff[i].setPosition(target.getPosition().x + target.getContentSize().width / 2,
+                    target.getPosition().y + 150);
+
+                //target.notifyAttacked(true, resArr[i]);
+            }
+            else
+            {
+                this.debuff[i].setPosition(target.getPosition().x - target.getContentSize().width / 2,
+                    target.getPosition().y + 150);
+
+                //target.notifyAttacked(false, resArr[i]);
+            }
+
+            this.initPerformEffect(this.debuff[i], "skilleffect", 9, 0.7, 1);
         }
 
         return 1200;
@@ -215,7 +263,7 @@ var BattlePerformLayer = BaseLayer.extend({
         for(var i = 0; i < targetArr.length; ++i)
         {
             var eff;
-            if(resArr[i])
+            if(resArr[i] || resArr.length <= i)
             {
                 eff = GameLabelPool.GetInstance().getValidLabelAtlas();
                 eff.setString(12);
@@ -249,5 +297,13 @@ var BattlePerformLayer = BaseLayer.extend({
         }
 
         return 500;
+    },
+
+    clearTargetCardSprites:function()
+    {
+        for(var i = 0; i < this.performSprite.length; ++i)
+        {
+            this.performSprite[i].setVisible(false);
+        }
     }
 })

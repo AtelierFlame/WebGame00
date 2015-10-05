@@ -53,8 +53,7 @@ var BattleCardSprite = cc.Sprite.extend({
         cc.eventManager.addListener({
             event:cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches:true,
-            onTouchBegan:this.onTouchBegan,
-            onTouchMoved:this.onTouchMoved
+            onTouchBegan:this.onTouchBegan
         }, this);
     },
 
@@ -103,13 +102,18 @@ var BattleCardSprite = cc.Sprite.extend({
             this.setColor(cc.color(255, 255, 255));
             this.healthBar.setOpacity(255);
         }
+
+        if(!enable)
+        {
+            this.actionType = BattleActionType.BAT_None;
+        }
     },
 
     setSelectable:function(actiontype)
     {
         this.actionType = actiontype;
 
-        var action;
+        var action = null;
         switch(this.actionType)
         {
             case BattleActionType.BAT_Move:
@@ -120,6 +124,9 @@ var BattleCardSprite = cc.Sprite.extend({
                 break;
 
             case BattleActionType.BAT_Attack:
+                break;
+
+            case BattleActionType.BAT_Skill:
                 action = new cc.Sequence(
                     new cc.TintTo(0.4, 255, 64, 64),
                     new cc.TintTo(0.4, 255, 255, 255)
@@ -130,8 +137,8 @@ var BattleCardSprite = cc.Sprite.extend({
         if(action != null)
         {
             this.runAction(cc.repeatForever(action));
-            this.setActionEnable(true);
         }
+        this.setActionEnable(true);
     },
 
     onTouchBegan:function(touch, event)

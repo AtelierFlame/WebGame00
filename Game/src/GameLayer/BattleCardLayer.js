@@ -93,8 +93,6 @@ var BattleCardLayer = BaseLayer.extend({
                 }
             }
         }
-
-        //this.skillpanel.updateWithCard(this.getSelectCardID());
     },
 
     getCardByIndex:function(index)
@@ -169,6 +167,10 @@ var BattleCardLayer = BaseLayer.extend({
                     break;
                 }
                 BattleManager.GetInstance().handleAttackAction(card.cardIndex);
+                break;
+
+            case BattleActionType.BAT_Skill:
+                BattleManager.GetInstance().handleSkillAction(card.cardIndex);
                 break;
         }
     },
@@ -363,6 +365,17 @@ var BattleCardLayer = BaseLayer.extend({
             if(this.getCardByIndex(targetIdxArray[i]) != null)
             {
                 this.getCardByIndex(targetIdxArray[i]).setSelectable(BattleActionType.BAT_Attack);
+            }
+        }
+    },
+
+    hintSkillAction:function(cardIdx, targetIdxArray)
+    {
+        for(var i = 0; i < targetIdxArray.length; ++i)
+        {
+            if(this.getCardByIndex(targetIdxArray[i]) != null)
+            {
+                this.getCardByIndex(targetIdxArray[i]).setSelectable(BattleActionType.BAT_Skill);
             }
         }
     }

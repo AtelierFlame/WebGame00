@@ -23,6 +23,8 @@ var g_CardList =[
         mental:100,
         minrange:1,
         maxrange:2,
+        lightskill:[],
+        darkskill:[],
     },
     {
         id:2,
@@ -39,6 +41,8 @@ var g_CardList =[
         mental:100,
         minrange:1,
         maxrange:3,
+        lightskill:[1],
+        darkskill:[],
     },
     {
         id:3,
@@ -55,6 +59,8 @@ var g_CardList =[
         mental:100,
         minrange:1,
         maxrange:4,
+        lightskill:[],
+        darkskill:[],
     },
     {
         id:4,
@@ -71,6 +77,8 @@ var g_CardList =[
         mental:100,
         minrange:1,
         maxrange:2,
+        lightskill:[],
+        darkskill:[],
     },
     {
         id:5,
@@ -87,6 +95,8 @@ var g_CardList =[
         mental:100,
         minrange:1,
         maxrange:3,
+        lightskill:[],
+        darkskill:[],
     },
     {
         id:6,
@@ -102,7 +112,9 @@ var g_CardList =[
         dexterity:41,
         mental:100,
         minrange:1,
-        maxrange:1,
+        maxrange:4,
+        lightskill:[],
+        darkskill:[],
     },
     {
         id:7,
@@ -118,12 +130,14 @@ var g_CardList =[
         dexterity:49,
         mental:100,
         minrange:1,
-        maxrange:4,
+        maxrange:6,
+        lightskill:[],
+        darkskill:[],
     },
     {
         id:8,
         image:s_card_08,
-        thumbrect:cc.rect(72, 126, 64, 64),
+        thumbrect:cc.rect(78, 35, 64, 64),
         hitpoint:300,
         maxHitpoint:300,
         stamina:100,
@@ -134,6 +148,8 @@ var g_CardList =[
         dexterity:45,
         mental:100,
         minrange:1,
-        maxrange:3,
+        maxrange:5,
+        lightskill:[],
+        darkskill:[],
     },
 ]

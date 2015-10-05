@@ -1,17 +1,23 @@
 /**
- * Created by Administrator on 2015/7/21.
+ * Created by flamehaze on 2015/7/21.
  */
 var g_CardListSize = 8;
 var g_CardListSideSize = 4;
+
+/**
+ * Card Index
+ * 3 2 1 0 | 4 5 6 7
+ */
 
 if(typeof BattleActionType == "undefined")
 {
     var BattleActionType =
     {
-        BAT_Move:0,
-        BAT_Defence:1,
-        BAT_Attack:2,
-        BAT_Skill:3
+        BAT_None:0,
+        BAT_Move:1,
+        BAT_Defence:2,
+        BAT_Attack:3,
+        BAT_Skill:4
     }
 }
 
@@ -30,6 +36,8 @@ var BattleManager = cc.Class.extend({
     cardList:[],
     cardActionSequence:[],
     curSelectCardIndex:0,
+
+    curSkillData:null,
 
     ctor:function()
     {
@@ -135,6 +143,11 @@ var BattleManager = cc.Class.extend({
         }
     },
 
+    isEnemyCard:function(index)
+    {
+        return index >= g_CardListSideSize;
+    },
+
     selectNextCard:function()
     {
         if(this.cardActionSequence.length == 0)
@@ -165,7 +178,7 @@ var BattleManager = cc.Class.extend({
         }
         if(this.skillLayer != null)
         {
-            this.skillLayer.updateWithCard(target.cardIndex, this.cardList[target.cardIndex].cardID);
+            this.skillLayer.updateWithCard(target.cardIndex, this.cardList[target.cardIndex]);
         }
         if(this.infoLayer != null)
         {
@@ -176,11 +189,9 @@ var BattleManager = cc.Class.extend({
     startBattleAction:function(type, cardidx, targetidx, res)
     {
         this.skillLayer.disableActionOrder();
-        if(cardidx == 1)
-        {
-            BattleActionState.GetInstance().setAction(type, cardidx, targetidx, res);
-            this.gotoState(BattleActionState.GetInstance());
-        }
+
+        BattleActionState.GetInstance().setAction(type, cardidx, targetidx, res);
+        this.gotoState(BattleActionState.GetInstance());
     },
 
     notifyIndexChange:function(idx, targetidx)
@@ -255,6 +266,20 @@ var BattleManager = cc.Class.extend({
         var minrange = this.cardList[index].getMinRange();
         var maxrange = this.cardList[index].getMaxRange();
         return this.getRangePosition(index, minrange, maxrange, false);
+    },
+
+    getSkillRangePosition:function(index, skill)
+    {
+        if(this.cardList[index] == null)
+        {
+            return [];
+        }
+
+        var minrange = skill.minRange;
+        var maxrange = skill.maxRange;
+        var side = skill.friendly;
+
+        return this.getRangePosition(index, minrange, maxrange, side);
     },
 
     getRangePosition:function(index, minrange, maxrange, bSameSide)
@@ -350,6 +375,27 @@ var BattleManager = cc.Class.extend({
         return ar;
     },
 
+    getCardDistance:function(index1, index2)
+    {
+        if(index1 < g_CardListSideSize && index2 < g_CardListSideSize)
+        {
+            return Math.abs(index1 - index2);
+        }
+        else if(index1 >= g_CardListSideSize && index2 >= g_CardListSideSize)
+        {
+            return Math.abs(index1 - index2);
+        }
+        else if(index1 < g_CardListSideSize)
+        {
+            return Math.abs(index1) + Math.abs(index2 - g_CardListSize) + 1;
+        }
+        else
+        {
+            return Math.abs(index2) + Math.abs(index1 - g_CardListSize) + 1;
+        }
+        return g_CardListSize;
+    },
+
     getCardIndexOffset:function(index, offset, bLeft)
     {
         if(index < g_CardListSideSize)
@@ -402,12 +448,24 @@ var BattleManager = cc.Class.extend({
         return -1;
     },
 
+    excuteAICommand:function(actiontype, targets)
+    {
+        switch(actiontype)
+        {
+            case BattleActionType.BAT_Attack:
+                this.handleAttackAction(targets);
+                break;
+        }
+    },
+
     handleHintAttackAction:function()
     {
         this.cardLayer.initNonActionCards(this.curSelectCardIndex);
 
         this.cardLayer.hintAttackAction(this.curSelectCardIndex,
             this.getAttackRangePosition(this.curSelectCardIndex));
+
+        this.curSkillData = null;
     },
 
     handleAttackAction:function(targetIdx)
@@ -441,6 +499,8 @@ var BattleManager = cc.Class.extend({
 
         this.cardLayer.hintMoveAction(this.curSelectCardIndex,
             this.getMoveablePosition(this.curSelectCardIndex));
+
+        this.curSkillData = null;
     },
 
     handleMoveAction:function(targetIdx)
@@ -460,8 +520,44 @@ var BattleManager = cc.Class.extend({
             [],
             [true]
         );
-    }
 
+        this.curSkillData = null;
+    },
+
+    handleHintSkillAction:function(target)
+    {
+        var card = this.cardList[this.curSelectCardIndex];
+        if(card.lightskill.length > target.getIndex())
+        {
+            this.curSkillData = card.lightskill[target.getIndex()];
+            this.cardLayer.initNonActionCards(this.curSelectCardIndex);
+
+            this.cardLayer.hintSkillAction(this.curSelectCardIndex,
+                this.getSkillRangePosition(this.curSelectCardIndex, this.curSkillData));
+        }
+    },
+
+    handleSkillAction:function(targetIdx)
+    {
+        if(this.curSkillData != null)
+        {
+            var targetarray = [];
+            if(this.curSkillData.aoe)
+            {
+                targetarray = this.getSkillRangePosition(this.curSelectCardIndex, this.curSkillData);
+            }
+            else
+            {
+                targetarray = [targetIdx];
+            }
+
+            this.startBattleAction(BattleActionType.BAT_Skill,
+                this.curSelectCardIndex,
+                targetarray,
+                [true]
+            );
+        }
+    }
 });
 
 BattleManager.GetInstance = function()

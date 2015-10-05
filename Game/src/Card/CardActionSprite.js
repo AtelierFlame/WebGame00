@@ -6,10 +6,16 @@ var CardActionSprite = cc.Sprite.extend({
     callBackTarget:null,
 
     enable:false,
+    skillindex:0,
 
     rect:function()
     {
         return cc.rect( 0, 0, this._rect.width, this._rect.height );
+    },
+
+    getIndex:function()
+    {
+        return this.skillindex;
     },
 
     containsTouchLocation:function(touch)

@@ -26,6 +26,9 @@ var PlayerCardData = cc.Class.extend({
     minrange:1,
     maxrange:1,
 
+    lightskill:[],
+    darkskill:[],
+
     init:function(data)
     {
         this.cardID = data.id;
@@ -40,6 +43,28 @@ var PlayerCardData = cc.Class.extend({
         this.mental = data.mental;
         this.minrange = data.minrange;
         this.maxrange = data.maxrange;
+
+        this.initSkill(data);
+    },
+
+    initSkill:function(data)
+    {
+        for(var i = 0; i < data.lightskill.length; ++i)
+        {
+            this.lightskill.push(new CardSkillData());
+            this.lightskill[i].init(g_SkillList[data.lightskill[i]]);
+        }
+
+        for(var i = 0; i < data.darkskill.length; ++i)
+        {
+            this.darkskill.push(new CardSkillData());
+            this.darkskill[i].init(g_SkillList[data.darkskill[i]]);
+        }
+    },
+
+    getLevel:function()
+    {
+        return this.cardLevel;
     },
 
     getHitPoint:function()
@@ -181,6 +206,26 @@ var PlayerCardData = cc.Class.extend({
             res = 1;
         }
         return res;
+    },
+
+    getSkillData:function(index, light)
+    {
+        if(light)
+        {
+            if(this.lightskill.length > index)
+            {
+                return this.lightskill[index];
+            }
+        }
+        else
+        {
+            if(this.darkskill.length > index)
+            {
+                return this.darkskill[index];
+            }
+        }
+
+        return null;
     },
 
     takeDamage:function(damage)

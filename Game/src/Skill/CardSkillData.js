@@ -16,7 +16,7 @@ if(typeof SkillAttributeType == "undefined")
 {
     var SkillAttributeType =
     {
-        SAT_Default:0,
+        SAT_Level:0,
         SAT_HP:1,
         SAT_STA:2,
         SAT_STR:3,
@@ -61,6 +61,8 @@ if(typeof SkillConditionMode == "undefined")
         SCM_Equal:0,
         SCM_LessThan:1,
         SCM_MoreThan:2,
+        SCM_NotLessThan:3,
+        SCM_NotMoreThan:4,
     }
 }
 
@@ -105,7 +107,7 @@ var CardSkillValue = cc.Class.extend({
 
         if(target != null)
         {
-            value += this.getModValue(self, this.targetAttrType, this.targetAttrMod);
+            value -= this.getModValue(self, this.targetAttrType, this.targetAttrMod);
         }
 
         return value;
@@ -115,8 +117,8 @@ var CardSkillValue = cc.Class.extend({
     {
         switch(attr)
         {
-            case SkillAttributeType.SAT_Default:
-                return 0;
+            case SkillAttributeType.SAT_Level:
+                return data.getLevel() * mod;
 
             case SkillAttributeType.SAT_HP:
                 return data.getHitPoint() * mod;
@@ -157,22 +159,40 @@ var CardSkillData = cc.Class.extend({
 
     coolDown:1,
     friendly:true,
-    targetCount:1,
+    aoe:false,
+    targetcount:1,
     minRange:1,
     maxRange:1,
 
     init:function(data)
     {
         this.skillID = data.skillID;
+
         this.skillEffect = data.skillEffect;
-        this.skillEffectValue = data.skillEffectValue;
-        this.skillCondSelf = data.skillCondSelf;
+        for(var i = 0; i < data.skillEffectValue.length; ++i)
+        {
+            this.skillEffectValue.push(new CardSkillValue());
+            this.skillEffectValue[i].init(data.skillEffectValue[i]);
+        }
+
+        for(var i = 0; i < data.skillCondSelf.length; ++i)
+        {
+            this.skillCondSelf.push(new SkillCondition());
+            this.skillCondSelf[i].init(g_SkillCondition[data.skillCondSelf[i]]);
+        }
         this.skillCondSelfValue = data.skillCondSelfValue;
-        this.skillCondTarget = data.skillCondTarget;
+
+        for(var i = 0; i < data.skillCondTarget.length; ++i)
+        {
+            this.skillCondTarget.push(new SkillCondition());
+            this.skillCondTarget[i].init(g_SkillCondition[data.skillCondTarget[i]]);
+        }
         this.skillCondTargetValue = data.skillCondTargetValue;
+
         this.coolDown = data.coolDown;
         this.friendly = data.friendly;
-        this.targetCount = data.targetCount;
+        this.aoe = data.aoe;
+        this.targetcount = data.targetcount;
         this.minRange = data.minRange;
         this.maxRange = data.maxRange;
     },
@@ -189,6 +209,12 @@ var CardSkillData = cc.Class.extend({
 
             case SkillConditionMode.SCM_MoreThan:
                 return value > tarvalue;
+
+            case SkillConditionMode.SCM_NotLessThan:
+                return value >= tarvalue;
+
+            case SkillConditionMode.SCM_NotMoreThan:
+                return value <= tarvalue;
         }
 
         return false;
@@ -198,8 +224,8 @@ var CardSkillData = cc.Class.extend({
     {
         switch(attr)
         {
-            case SkillAttributeType.SAT_Default:
-                return true;
+            case SkillAttributeType.SAT_Level:
+                return this.compareValue(card.getLevel(), value, mode);
 
             case SkillAttributeType.SAT_HP:
                 switch(valuetype)

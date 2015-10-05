@@ -25,8 +25,16 @@ var g_SkillCondition=[
     },
 
     {
-        //> % hp
+        //> level
         id:1,
+        attrtype:0,
+        valuetype:0,
+        mode:3,
+    },
+
+    {
+        //> % hp
+        id:2,
         attrtype:1,
         valuetype:1,
         mode:2,
@@ -52,11 +60,12 @@ var g_SkillList=[
                 targetmod:0,
             }
         ],
-        skillCondSelf:[],
-        skillCondSelfValue:[],
+        skillCondSelf:[1],
+        skillCondSelfValue:[0],
         skillCondTarget:[],
         skillCondTargetValue:[],
-        coolDown:1,
+        aoe:false,
+        targetcount:2,
         friendly:false,
         targetCount:2,
         minRange:1,
