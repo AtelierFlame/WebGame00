@@ -54,6 +54,8 @@ var BattleSkillPanelLayer = BaseLayer.extend({
 
     updateWithCard:function(cardIdx, card)
     {
+        this.clearSkillIcon();
+
         if(card == null)
         {
             return;
@@ -88,19 +90,28 @@ var BattleSkillPanelLayer = BaseLayer.extend({
 
     updateCardSkill:function(card)
     {
-        for(var i = 0; i < g_MaxSkillCount; ++i )
+        for(var i = 0; i < g_MaxSkillCount; ++i)
         {
             if(card.lightskill.length <= i)
             {
                 break;
             }
 
+            this.skillList[i].setVisible(true);
             this.skillList[i].initWithSpriteFrame(
                 cc.spriteFrameCache.getSpriteFrame(g_SkillList[card.lightskill[i].skillID].icon));
             this.skillList[i].setAnchorPoint(0, 0);
             this.skillList[i].setScale(g_CardSkillSize / this.skillList[i].getContentSize().width,
                 g_CardSkillSize / this.skillList[i].getContentSize().height);
             this.skillList[i].setEnable(true);
+        }
+    },
+
+    clearSkillIcon:function()
+    {
+        for(var i = 0; i < g_MaxSkillCount; ++i)
+        {
+            this.skillList[i].setVisible(false);
         }
     },
 

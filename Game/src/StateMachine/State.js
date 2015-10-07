@@ -17,7 +17,7 @@ var State = cc.Class.extend({
 
     EndState: function(stateName)
     {
-        cc.log("End State From " + this.stateName + " to " + stateName);
+        //cc.log("End State From " + this.stateName + " to " + stateName);
     },
 
     CheckState:function()

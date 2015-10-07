@@ -10,16 +10,25 @@ var BattleCardSprite = cc.Sprite.extend({
     actionType:0,
 
     healthBar:null,
+    healthBarBG:null,
+
+    isDead:false,
 
     ctor:function()
     {
         this._super();
 
-        this.healthBar = new cc.LayerColor(cc.color(255, 128, 0));
+        this.healthBar = new cc.LayerColor(cc.color(255, 64, 64));
         this.healthBar.setAnchorPoint(0, 1);
         this.healthBar.setContentSize(7, 70);
-        this.healthBar.setPosition(5, 180);
-        this.addChild(this.healthBar, g_GameZOrder.ui);
+        this.healthBar.setPosition(5, 170);
+        this.addChild(this.healthBar, g_GameZOrder.ui + 1);
+
+        this.healthBarBG = new cc.LayerColor(cc.color(0, 0, 0))
+        this.healthBarBG.setAnchorPoint(0, 1);
+        this.healthBarBG.setContentSize(7, 70);
+        this.healthBarBG.setPosition(5, 170);
+        this.addChild(this.healthBarBG, g_GameZOrder.ui);
     },
 
     rect:function()
@@ -37,12 +46,19 @@ var BattleCardSprite = cc.Sprite.extend({
     {
         if(bLeft)
         {
-            this.healthBar.setPosition(5, 180);
+            this.healthBar.setPosition(5, 170);
+            this.healthBarBG.setPosition(5, 170);
         }
         else
         {
-            this.healthBar.setPosition(205, 180);
+            this.healthBar.setPosition(173, 170);
+            this.healthBarBG.setPosition(173, 170);
         }
+    },
+
+    updateHealthBar:function(pct)
+    {
+        this.healthBar.setScale(1, pct);
     },
 
     initTouchCallBack:function(callback, target)
@@ -89,6 +105,11 @@ var BattleCardSprite = cc.Sprite.extend({
 
     setActionEnable:function(enable)
     {
+        if(this.isDead)
+        {
+            return;
+        }
+
         this.actionEnable = enable;
         if(!this.actionEnable)
         {
@@ -96,11 +117,13 @@ var BattleCardSprite = cc.Sprite.extend({
             this.setOpacity(255);
             this.setColor(cc.color(128, 128, 128));
             this.healthBar.setOpacity(128);
+            this.healthBarBG.setOpacity(128);
         }
         else
         {
             this.setColor(cc.color(255, 255, 255));
             this.healthBar.setOpacity(255);
+            this.healthBarBG.setOpacity(255);
         }
 
         if(!enable)
@@ -111,6 +134,11 @@ var BattleCardSprite = cc.Sprite.extend({
 
     setSelectable:function(actiontype)
     {
+        if(this.isDead)
+        {
+            return;
+        }
+
         this.actionType = actiontype;
 
         var action = null;
@@ -123,7 +151,21 @@ var BattleCardSprite = cc.Sprite.extend({
                 );
                 break;
 
+            case BattleActionType.BAT_HintAttack:
+                break;
+
             case BattleActionType.BAT_Attack:
+                action = new cc.Sequence(
+                    new cc.TintTo(0.4, 255, 64, 64),
+                    new cc.TintTo(0.4, 255, 255, 255)
+                );
+                break;
+
+            case BattleActionType.BAT_HintSkill:
+                action = new cc.Sequence(
+                    new cc.TintTo(0.4, 255, 255, 128),
+                    new cc.TintTo(0.4, 255, 255, 255)
+                );
                 break;
 
             case BattleActionType.BAT_Skill:
@@ -139,6 +181,13 @@ var BattleCardSprite = cc.Sprite.extend({
             this.runAction(cc.repeatForever(action));
         }
         this.setActionEnable(true);
+    },
+
+    setDead:function()
+    {
+        this.isDead = true;
+        this.setActionEnable(false);
+        this.setColor(cc.color(64, 32, 32));
     },
 
     onTouchBegan:function(touch, event)

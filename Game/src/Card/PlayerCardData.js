@@ -11,6 +11,7 @@ var BASE_HIT_RATIO = 0.6;
 
 var PlayerCardData = cc.Class.extend({
     cardID:0,
+    cardIndex:0,
 
     cardLevel:1,
 
@@ -25,6 +26,7 @@ var PlayerCardData = cc.Class.extend({
     mental:0,
     minrange:1,
     maxrange:1,
+    attackcount:1,
 
     lightskill:[],
     darkskill:[],
@@ -43,6 +45,9 @@ var PlayerCardData = cc.Class.extend({
         this.mental = data.mental;
         this.minrange = data.minrange;
         this.maxrange = data.maxrange;
+        this.attackcount = data.attackcount;
+        this.lightskill = [];
+        this.darkskill = [];
 
         this.initSkill(data);
     },
@@ -60,6 +65,16 @@ var PlayerCardData = cc.Class.extend({
             this.darkskill.push(new CardSkillData());
             this.darkskill[i].init(g_SkillList[data.darkskill[i]]);
         }
+    },
+
+    setIndex:function(index)
+    {
+        this.cardIndex = index;
+    },
+
+    getIndex:function()
+    {
+        return this.cardIndex;
     },
 
     getLevel:function()
@@ -80,6 +95,11 @@ var PlayerCardData = cc.Class.extend({
     getHitPointPercentage:function()
     {
         if(this.maxHitpoint == 0)
+        {
+            return 0;
+        }
+
+        if(this.hitpoint <= 0)
         {
             return 0;
         }
@@ -141,6 +161,11 @@ var PlayerCardData = cc.Class.extend({
         return this.maxrange;
     },
 
+    getAttackTargetCount:function()
+    {
+        return this.attackcount;
+    },
+
     getDamageReduction:function()
     {
         var def = this.getDefence();
@@ -183,6 +208,12 @@ var PlayerCardData = cc.Class.extend({
     getHitRatio:function(target)
     {
         var value = this.getDexterity();
+
+        if(value >= target * target)
+        {
+            return 1;
+        }
+
         var res;
         if(value > target)
         {
@@ -231,5 +262,21 @@ var PlayerCardData = cc.Class.extend({
     takeDamage:function(damage)
     {
         this.hitpoint -= Math.round(damage);
+
+        if(this.hitpoint <= 0)
+        {
+            this.hitpoint = 0;
+            this.cardDied();
+        }
+    },
+
+    isDead:function()
+    {
+        return this.hitpoint <= 0;
+    },
+
+    cardDied:function()
+    {
+        BattleManager.GetInstance().notifyCardDead(this.cardIndex);
     }
 })

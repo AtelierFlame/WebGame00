@@ -4,6 +4,8 @@
 var g_CardListSize = 8;
 var g_CardListSideSize = 4;
 
+var g_MaxRoundCount = 8;
+
 /**
  * Card Index
  * 3 2 1 0 | 4 5 6 7
@@ -16,10 +18,27 @@ if(typeof BattleActionType == "undefined")
         BAT_None:0,
         BAT_Move:1,
         BAT_Defence:2,
-        BAT_Attack:3,
-        BAT_Skill:4
+        BAT_HintAttack:3,
+        BAT_Attack:4,
+        BAT_HintSkill:5,
+        BAT_Skill:6,
     }
 }
+
+if(typeof BattleEffectType == "undefined")
+{
+    var BattleEffectType =
+    {
+        BET_None:0,
+        BET_Dead:1,
+        BET_Revive:2,
+    }
+}
+
+var BattleEffect = cc.Class.extend({
+    type:BattleEffectType.BET_None,
+    index:0
+})
 
 var BattleManager = cc.Class.extend({
     stateMachine:null,
@@ -36,6 +55,10 @@ var BattleManager = cc.Class.extend({
     cardList:[],
     cardActionSequence:[],
     curSelectCardIndex:0,
+    curEffectCommand:[],
+
+    targetSelectableCards:[],
+    targetSelectedCards:[],
 
     curSkillData:null,
 
@@ -86,8 +109,11 @@ var BattleManager = cc.Class.extend({
         // for test
         for(var i = 0; i < g_CardListSize; ++i)
         {
-            this.cardList.push(new PlayerCardData());
+            var card = new PlayerCardData();
+            this.cardList.push(card);
             this.cardList[i].init(g_CardList[i + 1]);
+
+            this.cardList[i].setIndex(i);
         }
     },
 
@@ -114,7 +140,7 @@ var BattleManager = cc.Class.extend({
         for(var i = 0; i < g_CardListSize; ++i)
         {
             this.cardActionSequence.push(i);
-            if(this.cardList[i] != null)
+            if(this.cardList[i] != null && !this.cardList[i].isDead())
             {
                 cardSpeedList.push(this.cardList[i].getSpeed());
             }
@@ -143,6 +169,18 @@ var BattleManager = cc.Class.extend({
         }
     },
 
+    removeFromCardSequence:function(index)
+    {
+        for(var i = 0; i < this.cardActionSequence.length; ++i)
+        {
+            if(this.cardActionSequence[i] == index)
+            {
+                this.cardActionSequence.splice(i, 1);
+                return;
+            }
+        }
+    },
+
     isEnemyCard:function(index)
     {
         return index >= g_CardListSideSize;
@@ -150,22 +188,41 @@ var BattleManager = cc.Class.extend({
 
     selectNextCard:function()
     {
+        this.cardLayer.refreshCardsState();
+        this.clearEffectCommand();
+
         if(this.cardActionSequence.length == 0)
         {
-            cc.log("round over!");
+            this.roundOver();
             return;
         }
 
         var index = this.cardActionSequence.shift();
-        if(this.cardList[index] == null)
+        if(this.cardList[index] == null || this.cardList[index].isDead())
         {
-            cc.log("round over!");
+            this.roundOver();
             return;
         }
 
         this.curSelectCardIndex = index;
         BattlePreActionState.GetInstance().curCardSprite = this.cardLayer.getCardByIndex(this.curSelectCardIndex);
         this.gotoState(BattlePreActionState.GetInstance());
+    },
+
+    roundOver:function()
+    {
+        cc.log("Round " + this.curRoundCount + " Over");
+        if(this.curRoundCount >= g_MaxRoundCount)
+        {
+            cc.log("BattleOver");
+        }
+        this.curRoundCount++;
+        this.readyForBattle();
+    },
+
+    clearEffectCommand:function()
+    {
+        this.curEffectCommand = [];
     },
 
     notifyActionCardChange:function(target)
@@ -203,7 +260,9 @@ var BattleManager = cc.Class.extend({
 
         var cardData = this.cardList[targetidx];
         this.cardList[targetidx] = this.cardList[idx];
+        this.cardList[targetidx].setIndex(targetidx);
         this.cardList[idx] = cardData;
+        this.cardList[idx].setIndex(idx);
 
         for(var i = 0; i < this.cardActionSequence.length; ++i)
         {
@@ -265,7 +324,7 @@ var BattleManager = cc.Class.extend({
 
         var minrange = this.cardList[index].getMinRange();
         var maxrange = this.cardList[index].getMaxRange();
-        return this.getRangePosition(index, minrange, maxrange, false);
+        return this.getRangePosition(index, minrange, maxrange, false, true);
     },
 
     getSkillRangePosition:function(index, skill)
@@ -279,10 +338,10 @@ var BattleManager = cc.Class.extend({
         var maxrange = skill.maxRange;
         var side = skill.friendly;
 
-        return this.getRangePosition(index, minrange, maxrange, side);
+        return this.getRangePosition(index, minrange, maxrange, side, true);
     },
 
-    getRangePosition:function(index, minrange, maxrange, bSameSide)
+    getRangePosition:function(index, minrange, maxrange, bSameSide, checkDead)
     {
         var ar = new Array();
         if(index < g_CardListSideSize)
@@ -297,7 +356,10 @@ var BattleManager = cc.Class.extend({
 
                         if(right >= 0 && this.cardList[right] != null)
                         {
-                            ar.push(right);
+                            if(checkDead && !this.cardList[right].isDead())
+                            {
+                                ar.push(right);
+                            }
                         }
                     }
 
@@ -307,7 +369,10 @@ var BattleManager = cc.Class.extend({
 
                         if(left >= 0 && this.cardList[left] != null)
                         {
-                            ar.push(left);
+                            if(checkDead && !this.cardList[right].isDead())
+                            {
+                                ar.push(left);
+                            }
                         }
                     }
                 }
@@ -322,7 +387,10 @@ var BattleManager = cc.Class.extend({
 
                         if(right >= 0 && this.cardList[right] != null)
                         {
-                            ar.push(right);
+                            if(checkDead && !this.cardList[right].isDead())
+                            {
+                                ar.push(right);
+                            }
                         }
                     }
                 }
@@ -340,7 +408,10 @@ var BattleManager = cc.Class.extend({
 
                         if(right >= 0 && this.cardList[right] != null)
                         {
-                            ar.push(right);
+                            if(checkDead && !this.cardList[right].isDead())
+                            {
+                                ar.push(right);
+                            }
                         }
                     }
 
@@ -350,7 +421,10 @@ var BattleManager = cc.Class.extend({
 
                         if(left >= 0 && this.cardList[left] != null)
                         {
-                            ar.push(left);
+                            if(checkDead && !this.cardList[right].isDead())
+                            {
+                                ar.push(left);
+                            }
                         }
                     }
                 }
@@ -462,23 +536,61 @@ var BattleManager = cc.Class.extend({
     {
         this.cardLayer.initNonActionCards(this.curSelectCardIndex);
 
-        this.cardLayer.hintAttackAction(this.curSelectCardIndex,
-            this.getAttackRangePosition(this.curSelectCardIndex));
+        this.targetSelectableCards = this.getAttackRangePosition(this.curSelectCardIndex);
+        this.cardLayer.hintAttackAction(this.curSelectCardIndex, this.targetSelectableCards);
 
         this.curSkillData = null;
     },
 
     handleAttackAction:function(targetIdx)
     {
-        var res = this.checkAttackResult(targetIdx);
-        this.startBattleAction(BattleActionType.BAT_Attack,
-            this.curSelectCardIndex,
-            [targetIdx],
-            [res]
-        );
+        for(var i = 0; i < this.targetSelectedCards.length; ++i)
+        {
+            if(this.targetSelectedCards[i] == targetIdx)
+            {
+                return;
+            }
+        }
+
+        this.targetSelectedCards.push(targetIdx);
+
+        var card = this.cardList[this.curSelectCardIndex];
+        if(this.targetSelectableCards.length == this.targetSelectedCards.length ||
+            this.targetSelectedCards.length == card.getAttackTargetCount())
+        {
+            var res = [];
+            for(var i = 0; i < this.targetSelectedCards.length; ++i)
+            {
+                res.push(this.getAttackResult(this.targetSelectedCards[i]));
+            }
+            this.startBattleAction(BattleActionType.BAT_Attack,
+                this.curSelectCardIndex,
+                this.targetSelectedCards,
+                res
+            );
+
+            this.targetSelectableCards = [];
+            this.targetSelectedCards = [];
+        }
+        else
+        {
+            this.cardLayer.selectAttackAction(targetIdx);
+        }
     },
 
-    checkAttackResult:function(targetIdx)
+    cancelAttackAction:function(targetIdx)
+    {
+        for(var i = 0; i < this.targetSelectedCards.length; ++i)
+        {
+            if(this.targetSelectedCards[i] == targetIdx)
+            {
+                this.targetSelectedCards.splice(i--, 1);
+                this.cardLayer.cancelAttackAction(targetIdx);
+            }
+        }
+    },
+
+    getAttackResult:function(targetIdx)
     {
         var card = this.cardList[this.curSelectCardIndex];
         var target = this.cardList[targetIdx];
@@ -486,11 +598,23 @@ var BattleManager = cc.Class.extend({
         if(card != null && target != null)
         {
             var ratio = card.getHitRatio(target.getDexterity());
+            cc.log("Hit Ratio " + ratio);
+            if(Math.random() > ratio)
+            {
+                // miss
+                return -1;
+            }
 
-            return Math.random() <= ratio;
+            var damage = card.getAttackValue();
+            var defmod = target.getDamageReduction();
+
+            var res = Math.round(damage * (1 - defmod));
+            this.cardList[targetIdx].takeDamage(res);
+
+            return res;
         }
 
-        return false;
+        return -1;
     },
 
     handleHintMoveAction:function(card)
@@ -508,7 +632,7 @@ var BattleManager = cc.Class.extend({
         this.startBattleAction(BattleActionType.BAT_Move,
             this.curSelectCardIndex,
             [targetIdx],
-            [true]
+            []
         );
     },
 
@@ -518,7 +642,7 @@ var BattleManager = cc.Class.extend({
         this.startBattleAction(BattleActionType.BAT_Defence,
             this.curSelectCardIndex,
             [],
-            [true]
+            []
         );
 
         this.curSkillData = null;
@@ -531,9 +655,21 @@ var BattleManager = cc.Class.extend({
         {
             this.curSkillData = card.lightskill[target.getIndex()];
             this.cardLayer.initNonActionCards(this.curSelectCardIndex);
+            this.targetSelectableCards = this.getSkillRangePosition(this.curSelectCardIndex, this.curSkillData);
 
-            this.cardLayer.hintSkillAction(this.curSelectCardIndex,
-                this.getSkillRangePosition(this.curSelectCardIndex, this.curSkillData));
+            this.cardLayer.hintSkillAction(this.curSelectCardIndex, this.targetSelectableCards);
+        }
+    },
+
+    cancelSkillAction:function(targetIdx)
+    {
+        for(var i = 0; i < this.targetSelectedCards.length; ++i)
+        {
+            if(this.targetSelectedCards[i] == targetIdx)
+            {
+                this.targetSelectedCards.splice(i--, 1);
+                this.cardLayer.cancelSkillAction(targetIdx);
+            }
         }
     },
 
@@ -541,21 +677,106 @@ var BattleManager = cc.Class.extend({
     {
         if(this.curSkillData != null)
         {
-            var targetarray = [];
-            if(this.curSkillData.aoe)
+            for(var i = 0; i < this.targetSelectedCards.length; ++i)
             {
-                targetarray = this.getSkillRangePosition(this.curSelectCardIndex, this.curSkillData);
+                if(this.targetSelectedCards[i] == targetIdx)
+                {
+                    return;
+                }
+            }
+
+            this.targetSelectedCards.push(targetIdx);
+
+            if(this.targetSelectableCards.length == this.targetSelectedCards.length ||
+                this.targetSelectedCards.length == this.curSkillData.targetcount)
+            {
+                var res = [];
+                for(var i = 0; i < this.targetSelectedCards.length; ++i)
+                {
+                    res.push(0);
+                }
+                this.startBattleAction(BattleActionType.BAT_Skill,
+                    this.curSelectCardIndex,
+                    this.targetSelectedCards,
+                    res
+                );
+
+                this.targetSelectableCards = [];
+                this.targetSelectedCards = [];
             }
             else
             {
-                targetarray = [targetIdx];
+                this.cardLayer.selectSkillAction(targetIdx);
             }
+        }
+    },
 
-            this.startBattleAction(BattleActionType.BAT_Skill,
-                this.curSelectCardIndex,
-                targetarray,
-                [true]
-            );
+    addEffectCommand:function(type, index)
+    {
+        if(this.cardList[index] != null)
+        {
+            var cmd = new BattleEffect();
+            cmd.type = type;
+            cmd.index = index;
+
+            this.curEffectCommand.push(cmd);
+        }
+    },
+
+    notifyEffectCommand:function()
+    {
+        for(var i = 0; i < this.curEffectCommand.length; ++i)
+        {
+            var cmd = this.curEffectCommand[i];
+            switch(cmd.type)
+            {
+                case BattleEffectType.BET_None:
+                    break;
+
+                case BattleEffectType.BET_Dead:
+                    this.cardLayer.notifyCardDead(cmd.index);
+                    this.popCard(cmd.index);
+                    break;
+            }
+        }
+    },
+
+    notifyCardDead:function(index)
+    {
+        this.addEffectCommand(BattleEffectType.BET_Dead, index);
+        this.removeFromCardSequence(index);
+    },
+
+    popCard:function(index)
+    {
+        if(this.cardList[index] != null)
+        {
+            if(index < g_CardListSideSize)
+            {
+                for(var i = index + 1; i < g_CardListSideSize; ++i)
+                {
+                    if(this.cardList[i] == null)
+                    {
+                        return;
+                    }
+
+                    this.notifyIndexChange(index, i);
+                    ++index;
+                }
+            }
+            else
+            {
+                for(var i = index + 1; i < g_CardListSize; ++i)
+                {
+                    if(this.cardList[i] == null)
+                    {
+                        return;
+                    }
+
+                    this.notifyIndexChange(index, i);
+                    ++index;
+                }
+            }
         }
     }
 });

@@ -30,7 +30,7 @@ var BattleCardLayer = BaseLayer.extend({
         {
             // left sprites
             this.spriteListLeft.push(new BattleCardSprite());
-            this.spriteListLeft[i].setScale(0.7, 0.7);
+            this.spriteListLeft[i].setScale(0.8, 0.8);
             if(BattleManager.GetInstance().openingPerform)
             {
                 this.spriteListLeft[i].setPosition(-200, 140);
@@ -44,7 +44,7 @@ var BattleCardLayer = BaseLayer.extend({
 
             // right sprites
             this.spriteListRight.push(new BattleCardSprite());
-            this.spriteListRight[i].setScale(0.7, 0.7);
+            this.spriteListRight[i].setScale(0.8, 0.8);
             this.spriteListRight[i].setPosition(this.cardPosList[i + g_CardListSideSize]);
             if(BattleManager.GetInstance().openingPerform)
             {
@@ -126,7 +126,7 @@ var BattleCardLayer = BaseLayer.extend({
         else
         {
             this.spriteListRight[index - g_CardListSideSize] = card;
-            this.spriteListRight[index - g_CardListSideSize].cardIndex = index - g_CardListSideSize;
+            this.spriteListRight[index - g_CardListSideSize].cardIndex = index;
         }
     },
 
@@ -161,16 +161,18 @@ var BattleCardLayer = BaseLayer.extend({
                 BattleManager.GetInstance().handleMoveAction(card.cardIndex);
                 break;
 
-            case BattleActionType.BAT_Attack:
-                if(card.cardIndex == BattleManager.GetInstance().curSelectCardIndex)
-                {
-                    break;
-                }
+            case BattleActionType.BAT_HintAttack:
                 BattleManager.GetInstance().handleAttackAction(card.cardIndex);
                 break;
 
-            case BattleActionType.BAT_Skill:
+            case BattleActionType.BAT_Attack:
+                break;
+
+            case BattleActionType.BAT_HintSkill:
                 BattleManager.GetInstance().handleSkillAction(card.cardIndex);
+                break;
+
+            case BattleActionType.BAT_Skill:
                 break;
         }
     },
@@ -364,8 +366,24 @@ var BattleCardLayer = BaseLayer.extend({
         {
             if(this.getCardByIndex(targetIdxArray[i]) != null)
             {
-                this.getCardByIndex(targetIdxArray[i]).setSelectable(BattleActionType.BAT_Attack);
+                this.getCardByIndex(targetIdxArray[i]).setSelectable(BattleActionType.BAT_HintAttack);
             }
+        }
+    },
+
+    selectAttackAction:function(targetIdx)
+    {
+        if(this.getCardByIndex(targetIdx) != null)
+        {
+            this.getCardByIndex(targetIdx).setSelectable(BattleActionType.BAT_Attack);
+        }
+    },
+
+    cancelAttackAction:function(targetIdx)
+    {
+        if(this.getCardByIndex(targetIdx) != null)
+        {
+            this.getCardByIndex(targetIdx).setSelectable(BattleActionType.BAT_HintAttack);
         }
     },
 
@@ -375,8 +393,51 @@ var BattleCardLayer = BaseLayer.extend({
         {
             if(this.getCardByIndex(targetIdxArray[i]) != null)
             {
-                this.getCardByIndex(targetIdxArray[i]).setSelectable(BattleActionType.BAT_Skill);
+                this.getCardByIndex(targetIdxArray[i]).setSelectable(BattleActionType.BAT_HintSkill);
             }
+        }
+    },
+
+    selectSkillAction:function(targetIdx)
+    {
+        if(this.getCardByIndex(targetIdx) != null)
+        {
+            this.getCardByIndex(targetIdx).setSelectable(BattleActionType.BAT_Skill);
+        }
+    },
+
+    cancelSkillAction:function(targetIdx)
+    {
+        if(this.getCardByIndex(targetIdx) != null)
+        {
+            this.getCardByIndex(targetIdx).setSelectable(BattleActionType.BAT_HintSkill);
+        }
+    },
+
+    refreshCardsState:function()
+    {
+        this.updateCardsHealth();
+    },
+
+    updateCardsHealth:function()
+    {
+        for(var i = 0; i < g_CardListSize; ++i)
+        {
+            var card = this.getCardByIndex(i);
+            var data = BattleManager.GetInstance().getCardData(i);
+            if(card != null && data != null)
+            {
+                card.updateHealthBar(data.getHitPointPercentage());
+            }
+        }
+    },
+
+    notifyCardDead:function(index)
+    {
+        var card = this.getCardByIndex(index);
+        if(card != null)
+        {
+            card.setDead();
         }
     }
 })

@@ -13,6 +13,9 @@ var BattlePerformLayer = BaseLayer.extend({
     cardPosList:[],
     performSprite:[],
 
+    result0:null,
+    result1:null,
+
     ctor:function()
     {
         this._super();
@@ -26,6 +29,9 @@ var BattlePerformLayer = BaseLayer.extend({
         this.shield.setAnchorPoint(0.5, 0.5);
         this.shield.setOpacity(0);
         this.addChild(this.shield, g_GameZOrder.ui);
+
+        this.result0 = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("effectbg.png"));
+        this.result0.setContentSize(256, 256);
     },
 
     initAttackEffect:function()
@@ -34,8 +40,8 @@ var BattlePerformLayer = BaseLayer.extend({
         eff.setAnchorPoint(0.5, 0.5);
         eff.setOpacity(0);
         this.shaderBlackAlpha(eff);
-        eff.setScale(2);
-        this.addChild(eff, g_GameZOrder);
+        eff.setScale(1.5);
+        this.addChild(eff, g_GameZOrder.ui);
 
         this.attack.push(eff);
     },
@@ -46,22 +52,22 @@ var BattlePerformLayer = BaseLayer.extend({
         eff.setAnchorPoint(0.5, 0.5);
         eff.setOpacity(0);
         this.shaderBlackAlpha(eff);
-        eff.setScale(2);
-        this.addChild(eff, g_GameZOrder);
+        eff.setScale(1.5);
+        this.addChild(eff, g_GameZOrder.ui);
 
         this.debuff.push(eff);
     },
 
     initCardPostionList:function()
     {
-        this.cardPosList.push(cc.p(180, 100));
-        this.cardPosList.push(cc.p(150, 100));
-        this.cardPosList.push(cc.p(120, 100));
-        this.cardPosList.push(cc.p(90, 100));
-        this.cardPosList.push(cc.p(620, 100));
-        this.cardPosList.push(cc.p(650, 100));
-        this.cardPosList.push(cc.p(680, 100));
-        this.cardPosList.push(cc.p(710, 100));
+        this.cardPosList.push(cc.p(200, 120));
+        this.cardPosList.push(cc.p(150, 120));
+        this.cardPosList.push(cc.p(100, 120));
+        this.cardPosList.push(cc.p( 50, 120));
+        this.cardPosList.push(cc.p(600, 120));
+        this.cardPosList.push(cc.p(650, 120));
+        this.cardPosList.push(cc.p(700, 120));
+        this.cardPosList.push(cc.p(750, 120));
     },
 
     setCardSprite:function(index)
@@ -174,18 +180,18 @@ var BattlePerformLayer = BaseLayer.extend({
             if(targetArr[i] < g_CardListSideSize)
             {
                 this.attack[i].setPosition(target.getPosition().x + target.getContentSize().width / 2,
-                    target.getPosition().y + 150);
+                    target.getPosition().y + 125);
 
                 this.attack[i].setFlippedX(true);
-                target.notifyAttacked(true, resArr[i]);
+                target.notifyAttacked(true, resArr[i] >= 0 ? true : false);
             }
             else
             {
                 this.attack[i].setPosition(target.getPosition().x - target.getContentSize().width / 2,
-                    target.getPosition().y + 150);
+                    target.getPosition().y + 125);
 
                 this.attack[i].setFlippedX(false);
-                target.notifyAttacked(false, resArr[i]);
+                target.notifyAttacked(false, resArr[i] >= 0 ? true : false);
             }
 
             this.initPerformEffect(this.attack[i], "attackeffect", 7, 0.7, 1);
@@ -208,14 +214,14 @@ var BattlePerformLayer = BaseLayer.extend({
             if(targetArr[i] < g_CardListSideSize)
             {
                 this.debuff[i].setPosition(target.getPosition().x + target.getContentSize().width / 2,
-                    target.getPosition().y + 150);
+                    target.getPosition().y + 125);
 
                 //target.notifyAttacked(true, resArr[i]);
             }
             else
             {
                 this.debuff[i].setPosition(target.getPosition().x - target.getContentSize().width / 2,
-                    target.getPosition().y + 150);
+                    target.getPosition().y + 125);
 
                 //target.notifyAttacked(false, resArr[i]);
             }
@@ -263,15 +269,15 @@ var BattlePerformLayer = BaseLayer.extend({
         for(var i = 0; i < targetArr.length; ++i)
         {
             var eff;
-            if(resArr[i] || resArr.length <= i)
+            if(resArr[i] >= 0 || resArr.length <= i)
             {
                 eff = GameLabelPool.GetInstance().getValidLabelAtlas();
-                eff.setString(12);
+                eff.setString(resArr[i]);
             }
             else
             {
                 eff = GameLabelPool.GetInstance().getValidLabelBM();
-                eff.setColor(cc.color(64, 64, 64));
+                eff.setColor(cc.color(40, 40, 40));
                 eff.setString("miss");
             }
             eff.setOpacity(255);
@@ -280,12 +286,12 @@ var BattlePerformLayer = BaseLayer.extend({
             if(targetArr[i] < g_CardListSideSize)
             {
                 eff.setPosition(target.getPosition().x + target.getContentSize().width / 2,
-                    target.getPosition().y + 150);
+                    target.getPosition().y + 125);
             }
             else
             {
                 eff.setPosition(target.getPosition().x - target.getContentSize().width / 2,
-                    target.getPosition().y + 150);
+                    target.getPosition().y + 125);
             }
             this.addChild(eff, g_GameZOrder.ui);
             eff.runEffectAction();

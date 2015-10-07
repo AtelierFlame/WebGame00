@@ -5,7 +5,7 @@ var BattleActionState = State.extend({
     cardIdx: -1,
     targetIdx: [],
     actionType: 0,
-    isSuccess:[],
+    result:[],
 
     ctor: function () {
         this._super();
@@ -16,7 +16,7 @@ var BattleActionState = State.extend({
         this.actionType = type;
         this.cardIdx = idx;
         this.targetIdx = idxarray;
-        this.isSuccess = res;
+        this.result = res;
     },
 
     BeginState: function (stateName) {
@@ -53,14 +53,14 @@ var BattleActionState = State.extend({
             case BattleActionType.BAT_Attack:
                 if (self.targetIdx.length > 0)
                 {
-                    duration = self.stateOwner.performLayer.setupMeleeAttackEffect(self.targetIdx, self.isSuccess);
+                    duration = self.stateOwner.performLayer.setupMeleeAttackEffect(self.targetIdx, self.result);
                 }
                 break;
 
             case BattleActionType.BAT_Skill:
                 if(self.targetIdx.length > 0)
                 {
-                    duration = self.stateOwner.performLayer.setupSkillAttackEffect(self.targetIdx, self.isSuccess);
+                    duration = self.stateOwner.performLayer.setupSkillAttackEffect(self.targetIdx, self.result);
                 }
                 break;
         }
@@ -86,10 +86,12 @@ var BattleActionState = State.extend({
             case BattleActionType.BAT_Attack:
                 if(self.targetIdx.length > 0)
                 {
-                    duration = self.stateOwner.performLayer.setupMeleeAttackResult(self.targetIdx, self.isSuccess);
+                    duration = self.stateOwner.performLayer.setupMeleeAttackResult(self.targetIdx, self.result);
                 }
                 break;
         }
+
+        self.stateOwner.notifyEffectCommand();
 
         window.setTimeout(self.endAction, duration, self);
     },
